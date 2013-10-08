@@ -410,7 +410,14 @@ iproto.remove = function() {
   if(this._stack.length === 0) {
     return this._tree
   }
+  throw new Error("Not implemented")
+
+  var stack = this._stack
+  var nstack = new Array(stack.length)
   
+  for(var i=stack.length-2; i>=0; --i) {
+    if(stack[i])
+  }
 }
 
 //Returns key

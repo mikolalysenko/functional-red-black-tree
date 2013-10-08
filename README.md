@@ -2,8 +2,11 @@ functional-red-black-tree
 =========================
 A purely functional red-black tree data structure.  
 
-NOT YET FINISHED
+Functional data structures allow for non-destructive updates.  So if you insert an element into the tree, it returns a new tree with the inserted element rather than destructively update the existing tree in place.  Doing this requires using extra memory, and if one were naive it could cost as much as reallocating the entire tree.  Instead, this data structure saves some memory by recycling references to previously allocated subtrees.  This requires using only O(log(n)) additional memory per copy instead of O(n) which a full copy would require.
 
+Some advantages of this is that it is possible to apply insertions and removals to the tree while still iterating over previous versions of the tree.  Functional and persistent data structures can also be useful in many geometric algorithms like point location within triangulations or ray queries.
+
+NOT YET FINISHED
 
 # Install
 
