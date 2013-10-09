@@ -15,13 +15,17 @@ NOT YET FINISHED
 # Example
 
 ```javascript
+//Load the library
 var createTree = require("functional-red-black-tree")
 
+//Create a tree
 var t1 = createTree()
 
+//Insert some items into the tree
 var t2 = t1.insert(1, "foo")
 var t3 = t2.insert(2, "bar")
 
+//Remove something
 var t4 = t3.remove(1)
 ```
 
@@ -39,6 +43,9 @@ Creates an empty functional tree
 * `compare` is an optional comparison function, same semantics as array.sort()
 
 **Returns** An empty tree ordered by `compare`
+
+### `tree.root`
+Returns the root node of the tree
 
 ### `tree.get(key)`
 Retrieves the value associated to the given key
@@ -102,6 +109,21 @@ An iterator pointing to the first element in the tree
 
 ### `tree.end`
 An iterator pointing to the last element in the tree
+
+## Node properties
+Each node of the tree has the following properties:
+
+### `node.key`
+The key associated to the node
+
+### `node.value`
+The value associated to the node
+
+### `node.left`
+The left subtree of the node
+
+### `node.right`
+The right subtree of the node
 
 ## Iterator methods
 

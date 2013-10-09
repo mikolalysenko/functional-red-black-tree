@@ -6,33 +6,34 @@ var RED   = 0
 var BLACK = 1
 
 function RBNode(color, key, value, left, right, count) {
+  this.key = key
+  this.value = value
+  this.left = left
+  this.right = right
   this._color = color
-  this._key = key
-  this._value = value
-  this._left = left
-  this._right = right
   this._count = count
 }
 
 function repaint(color, node) {
-  return new RBNode(color, node._key, node._value, node._left, node._right, node._count)
+  return new RBNode(color, node.key, node.value, node.left, node.right, node._count)
 }
 
 function recount(node) {
-  node._count = 1 + (node._left ? node._left._count : 0) + (node._right ? node._right._count : 0)
+  node._count = 1 + (node.left ? node.left._count : 0) + (node.right ? node.right._count : 0)
 }
 
 function RedBlackTree(compare, root) {
   this._compare = compare
-  this._root = root
+  this.root = root
 }
 
 var proto = RedBlackTree.prototype
 
+//Returns the number of nodes in the tree
 Object.defineProperty(proto, "size", {
   get: function() {
-    if(this._root) {
-      return this._root._count
+    if(this.root) {
+      return this.root._count
     }
     return 0
   }
@@ -42,17 +43,17 @@ Object.defineProperty(proto, "size", {
 proto.insert = function(key, value) {
   var cmp = this._compare
   //Find point to insert new node at
-  var n = this._root
+  var n = this.root
   var n_stack = []
   var d_stack = []
   while(n) {
-    var d = cmp(key, n)
+    var d = cmp(key, n.key)
     n_stack.push(n)
     d_stack.push(d)
     if(d <= 0) {
-      n = n._left
+      n = n.left
     } else {
-      n = n._right
+      n = n.right
     }
   }
   //Rebuild path to leaf node
@@ -60,96 +61,126 @@ proto.insert = function(key, value) {
   for(var s=n_stack.length-2; s>=0; --s) {
     var n = n_stack[s]
     if(d_stack[s] <= 0) {
-      n_stack[s] = new RBNode(n._color, n._key, n._value, n_stack[s+1], n._right, n._count+1)
+      n_stack[s] = new RBNode(n._color, n.key, n.value, n_stack[s+1], n.right, n._count+1)
     } else {
-      n_stack[s] = new RBNode(n._color, n._key, n._value, n._left, n_stack[s+1], n._count+1)
+      n_stack[s] = new RBNode(n._color, n.key, n.value, n.left, n_stack[s+1], n._count+1)
     }
   }
   //Rebalance tree using rotations
-  for(var s=n_stack.length-1; s>0; --s) {
+  for(var s=n_stack.length-1; s>1; --s) {
     var p = n_stack[s-1]
     if(p._color !== RED) {
       break
     }
     var n = n_stack[s]
     var pp = n_stack[s-2]
-    if(pp._left === p) {
-      if(p._left === n) {
-        var y = pp._right
+    if(pp.left === p) {
+      if(p.left === n) {
+        var y = pp.right
         if(y && y._color === RED) {
           p._color = BLACK
-          pp._right = repaint(BLACK, y)
+          pp.right = repaint(BLACK, y)
           pp._color = RED
         } else {
           pp._color = RED
-          pp._left = p._right
+          pp.left = p.right
           p._color = BLACK
-          p._right = pp
+          p.right = pp
           n_stack[s-2] = p
           n_stack[s-1] = n
           recount(pp)
-          recount(n)
           recount(p)
+          if(s >= 3) {
+            var ppp = n_stack[s-3]
+            if(ppp.left === pp) {
+              ppp.left = p
+            } else {
+              ppp.right = p
+            }
+          }
           break
         }
       } else {
-        var y = pp._left
+        var y = pp.left
         if(y && y._color === RED) {
           p._color = BLACK
-          pp._left = repaint(BLACK, y)
+          pp.left = repaint(BLACK, y)
           pp._color = RED
         } else {
-          p._right = n._left
+          p.right = n.left
           pp._color = RED
-          pp._left = n._right
+          pp.left = n.right
           n._color = BLACK
-          n._left = p
-          n._right = pp
+          n.left = p
+          n.right = pp
           n_stack[s-2] = n
           n_stack[s-1] = p
           recount(pp)
           recount(p)
           recount(n)
+          if(s >= 3) {
+            var ppp = n_stack[s-3]
+            if(ppp.left === pp) {
+              ppp.left = n
+            } else {
+              ppp.right = n
+            }
+          }
           break
         }
       }
     } else {
-     if(p._right === n) {
-        var y = pp._left
+     if(p.right === n) {
+        var y = pp.left
         if(y && y._color === RED) {
           p._color = BLACK
-          pp._left = repaint(BLACK, y)
+          pp.left = repaint(BLACK, y)
           pp._color = RED
         } else {
           pp._color = RED
-          pp._right = p._left
+          pp.right = p.left
           p._color = BLACK
-          p._left = pp
+          p.left = pp
           n_stack[s-2] = p
           n_stack[s-1] = n
           recount(pp)
-          recount(n)
           recount(p)
+          if(s >= 3) {
+            var ppp = n_stack[s-3]
+            if(ppp.left === pp) {
+              ppp.left = p
+            } else {
+              ppp.right = p
+            }
+          }
           break
         }
       } else {
-        var y = pp._right
+        var y = pp.right
         if(y && y._color === RED) {
           p._color = BLACK
-          pp._right = repaint(BLACK, y)
+          pp.right = repaint(BLACK, y)
           pp._color = RED
         } else {
-          p._left = n._right
+          p.left = n.right
           pp._color = RED
-          pp._right = n._left
+          pp.right = n.left
           n._color = BLACK
-          n._right = p
-          n._left = pp
+          n.right = p
+          n.left = pp
           n_stack[s-2] = n
           n_stack[s-1] = p
           recount(pp)
           recount(p)
           recount(n)
+          if(s >= 3) {
+            var ppp = n_stack[s-3]
+            if(ppp.left === pp) {
+              ppp.left = n
+            } else {
+              ppp.right = n
+            }
+          }
           break
         }
       }
@@ -165,22 +196,22 @@ function doVisit(lo, hi, compare, visit, node) {
   if(!node) {
     return
   }
-  var l = compare(lo, node._key)
-  var h = compare(hi, node._key)
+  var l = compare(lo, node.key)
+  var h = compare(hi, node.key)
   if(l <= 0) {
-    var v = doVisit(lo, hi, compare, visit, node._left)
+    var v = doVisit(lo, hi, compare, visit, node.left)
     if(v) {
       return v
     }
     if(h > 0) {
-      v = visit(node._key, node._value)
+      v = visit(node.key, node.value)
       if(v) {
         return v
       }
     }
   }
   if(h > 0) {
-    var v = doVisit(lo, hi, compare, visit, node._right)
+    var v = doVisit(lo, hi, compare, visit, node.right)
     if(v) {
       return v
     }
@@ -189,17 +220,17 @@ function doVisit(lo, hi, compare, visit, node) {
 }
 
 proto.foreach = function(lo, hi, visit) {
-  return doVisit(lo, hi, this._compare, visit, this._root)
+  return doVisit(lo, hi, this._compare, visit, this.root)
 }
 
 //First item in list
 Object.defineProperty(proto, "begin", {
   get: function() {
     var stack = []
-    var n = this._root
+    var n = this.root
     while(n) {
       stack.push(n)
-      n = n._left
+      n = n.left
     }
     return new RedBlackTreeIterator(this, stack)
   }
@@ -209,10 +240,10 @@ Object.defineProperty(proto, "begin", {
 Object.defineProperty(proto, "end", {
   get: function() {
     var stack = []
-    var n = this._root
+    var n = this.root
     while(n) {
       stack.push(n)
-      n = n._right
+      n = n.right
     }
     return new RedBlackTreeIterator(this, stack)
   }
@@ -220,26 +251,26 @@ Object.defineProperty(proto, "end", {
 
 //Find the ith item in the tree
 proto.at = function(idx) {
-  var n = this._root
+  var n = this.root
   var stack = []
   while(n) {
     stack.push(n)
-    if(n._left) {
-      if(idx < n._left._count) {
-        n = n._left
+    if(n.left) {
+      if(idx < n.left._count) {
+        n = n.left
         continue
       }
-      idx -= n._left._count
+      idx -= n.left._count
     }
     if(!idx) {
       return new RedBlackTreeIterator(this, stack)
     }
-    if(n._right) {
+    if(n.right) {
       idx -= 1
-      if(idx >= n._right._count) {
+      if(idx >= n.right._count) {
         break
       }
-      n = n._right
+      n = n.right
     }
   }
   return new RedBlackTreeIterator(this, [])
@@ -248,19 +279,19 @@ proto.at = function(idx) {
 //Least-lower-bound
 proto.leastLower = function(key) {
   var cmp = this._compare
-  var n = this._root
+  var n = this.root
   var stack = []
   var last_ptr = 0
   while(n) {
-    var d = cmp(key, n._key)
+    var d = cmp(key, n.key)
     stack.push(n)
     if(d <= 0) {
       last_ptr = stack.length
     }
     if(d <= 0) {
-      n = n._left
+      n = n.left
     } else {
-      n = n._right
+      n = n.right
     }
   }
   stack.length = last_ptr
@@ -271,19 +302,19 @@ proto.leastLower = function(key) {
 //Greatest-lower-bound
 proto.greatestLower = function(key) {
   var cmp = this._compare
-  var n = this._root
+  var n = this.root
   var stack = []
   var last_ptr = 0
   while(n) {
-    var d = cmp(key, n._key)
+    var d = cmp(key, n.key)
     stack.push(n)
     if(d < 0) {
       last_ptr = stack.length
     }
     if(d < 0) {
-      n = n._left
+      n = n.left
     } else {
-      n = n._right
+      n = n.right
     }
   }
   stack.length = last_ptr
@@ -294,19 +325,19 @@ proto.greatestLower = function(key) {
 //Least-upper-bound
 proto.leastUpper = function(key) {
   var cmp = this._compare
-  var n = this._root
+  var n = this.root
   var stack = []
   var last_ptr = 0
   while(n) {
-    var d = cmp(key, n._key)
+    var d = cmp(key, n.key)
     stack.push(n)
     if(d > 0) {
       last_ptr = stack.length
     }
     if(d <= 0) {
-      n = n._left
+      n = n.left
     } else {
-      n = n._right
+      n = n.right
     }
   }
   stack.length = last_ptr
@@ -317,19 +348,19 @@ proto.leastUpper = function(key) {
 //Greatest-upper-bound
 proto.greatestUpper = function(key) {
   var cmp = this._compare
-  var n = this._root
+  var n = this.root
   var stack = []
   var last_ptr = 0
   while(n) {
-    var d = cmp(key, n._key)
+    var d = cmp(key, n.key)
     stack.push(n)
     if(d >= 0) {
       last_ptr = stack.length
     }
     if(d < 0) {
-      n = n._left
+      n = n.left
     } else {
-      n = n._right
+      n = n.right
     }
   }
   stack.length = last_ptr
@@ -339,18 +370,18 @@ proto.greatestUpper = function(key) {
 //Finds the item with key if it exists
 proto.find = function(key) {
   var cmp = this._compare
-  var n = this._root
+  var n = this.root
   var stack = []
   while(n) {
-    var d = cmp(key, n._key)
+    var d = cmp(key, n.key)
     stack.push(n)
     if(d === 0) {
       return new RedBlackTreeIterator(this, stack)
     }
     if(d <= 0) {
-      n = n._left
+      n = n.left
     } else {
-      n = n._right
+      n = n.right
     }
   }
   return null
@@ -368,18 +399,18 @@ proto.remove = function(key) {
 //Returns the item at `key`
 proto.get = function(key) {
   var cmp = this._compare
-  var n = this._root
+  var n = this.root
   var stack = []
   while(n) {
-    var d = cmp(key, n._key)
+    var d = cmp(key, n.key)
     stack.push(n)
     if(d === 0) {
-      return n._value
+      return n.value
     }
     if(d <= 0) {
-      n = n._left
+      n = n.left
     } else {
-      n = n._right
+      n = n.right
     }
   }
   return
@@ -411,20 +442,13 @@ iproto.remove = function() {
     return this._tree
   }
   throw new Error("Not implemented")
-
-  var stack = this._stack
-  var nstack = new Array(stack.length)
-  
-  for(var i=stack.length-2; i>=0; --i) {
-    if(stack[i])
-  }
 }
 
 //Returns key
 Object.defineProperty(iproto, "key", {
   get: function() {
     if(this._stack.length > 0) {
-      return this._stack[this._stack.length-1]._key
+      return this._stack[this._stack.length-1].key
     }
     return
   },
@@ -435,7 +459,7 @@ Object.defineProperty(iproto, "key", {
 Object.defineProperty(iproto, "value", {
   get: function() {
     if(this._stack.length > 0) {
-      return this._stack[this._stack.length-1]._value
+      return this._stack[this._stack.length-1].value
     }
     return
   },
@@ -457,11 +481,11 @@ iproto.next = function() {
     return
   }
   var n = stack[stack.length-1]
-  if(n._right) {
-    n = n._right
+  if(n.right) {
+    n = n.right
     while(n) {
       stack.push(n)
-      n = n._left
+      n = n.left
     }
   } else {
     stack.pop()
@@ -479,11 +503,11 @@ Object.defineProperty(iproto, "hasNext", {
     if(stack.length === 0) {
       return false
     }
-    if(stack[stack.length-1]._right) {
+    if(stack[stack.length-1].right) {
       return true
     }
     for(var s=stack.length-1; s>0; --s) {
-      if(stack[s-1]._left === stack[s]) {
+      if(stack[s-1].left === stack[s]) {
         return true
       }
     }
