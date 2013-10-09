@@ -418,7 +418,7 @@ proto.get = function(key) {
 
 //Iterator for red black tree
 function RedBlackTreeIterator(tree, stack) {
-  this._tree = tree
+  this.tree = tree
   this._stack = stack
 }
 
@@ -431,15 +431,24 @@ Object.defineProperty(iproto, "valid", {
   }
 })
 
+Object.defineProperty(iproto, "node", {
+  get: function() {
+    if(this._stack.length > 0) {
+      return this._stack[this._stack.length-1]
+    }
+    return null
+  }
+})
+
 //Makes a copy of an iterator
 iproto.clone = function() {
-  return new RedBlackTreeIterator(this._tree, this._stack.slice())
+  return new RedBlackTreeIterator(this.tree, this._stack.slice())
 }
 
 //Removes item at iterator from tree
 iproto.remove = function() {
   if(this._stack.length === 0) {
-    return this._tree
+    return this.tree
   }
   throw new Error("Not implemented")
 }

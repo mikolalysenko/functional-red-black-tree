@@ -133,6 +133,12 @@ The key of the item referenced by the iterator
 ### `iter.value`
 The value of the item referenced by the iterator
 
+### `iter.node`
+The value of the node at the iterator's current position.  `null` is iterator is node valid.
+
+### `iter.tree`
+The tree associated to the iterator
+
 ### `iter.index`
 Returns the position of this iterator in the sequence.
 
