@@ -1,5 +1,7 @@
 "use strict"
 
+var util = require("util")
+
 module.exports = createRBTree
 
 var RED   = 0
@@ -67,21 +69,25 @@ proto.insert = function(key, value) {
     }
   }
   //Rebalance tree using rotations
+  //console.log("start insert", key, d_stack)
   for(var s=n_stack.length-1; s>1; --s) {
     var p = n_stack[s-1]
-    if(p._color !== RED) {
+    var n = n_stack[s]
+    if(p._color === BLACK || n._color === BLACK) {
       break
     }
-    var n = n_stack[s]
     var pp = n_stack[s-2]
     if(pp.left === p) {
       if(p.left === n) {
         var y = pp.right
         if(y && y._color === RED) {
+          //console.log("LLr")
           p._color = BLACK
           pp.right = repaint(BLACK, y)
           pp._color = RED
+          s -= 1
         } else {
+          //console.log("LLb")
           pp._color = RED
           pp.left = p.right
           p._color = BLACK
@@ -101,12 +107,15 @@ proto.insert = function(key, value) {
           break
         }
       } else {
-        var y = pp.left
+        var y = pp.right
         if(y && y._color === RED) {
+          //console.log("LRr")
           p._color = BLACK
-          pp.left = repaint(BLACK, y)
+          pp.right = repaint(BLACK, y)
           pp._color = RED
+          s -= 1
         } else {
+          //console.log("LRb")
           p.right = n.left
           pp._color = RED
           pp.left = n.right
@@ -130,13 +139,16 @@ proto.insert = function(key, value) {
         }
       }
     } else {
-     if(p.right === n) {
+      if(p.right === n) {
         var y = pp.left
         if(y && y._color === RED) {
+          //console.log("RRr", y.key)
           p._color = BLACK
           pp.left = repaint(BLACK, y)
           pp._color = RED
+          s -= 1
         } else {
+          //console.log("RRb")
           pp._color = RED
           pp.right = p.left
           p._color = BLACK
@@ -147,21 +159,24 @@ proto.insert = function(key, value) {
           recount(p)
           if(s >= 3) {
             var ppp = n_stack[s-3]
-            if(ppp.left === pp) {
-              ppp.left = p
-            } else {
+            if(ppp.right === pp) {
               ppp.right = p
+            } else {
+              ppp.left = p
             }
           }
           break
         }
       } else {
-        var y = pp.right
+        var y = pp.left
         if(y && y._color === RED) {
+          //console.log("RLr")
           p._color = BLACK
-          pp.right = repaint(BLACK, y)
+          pp.left = repaint(BLACK, y)
           pp._color = RED
+          s -= 1
         } else {
+          //console.log("RLb")
           p.left = n.right
           pp._color = RED
           pp.right = n.left
@@ -175,10 +190,10 @@ proto.insert = function(key, value) {
           recount(n)
           if(s >= 3) {
             var ppp = n_stack[s-3]
-            if(ppp.left === pp) {
-              ppp.left = n
-            } else {
+            if(ppp.right === pp) {
               ppp.right = n
+            } else {
+              ppp.left = n
             }
           }
           break
