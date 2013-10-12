@@ -54,6 +54,9 @@ Retrieves the value associated to the given key
 
 **Returns** The value of the first node associated to `key`
 
+### `tree.find(key)`
+Returns an iterator pointing to the first item in the tree with `key`, otherwise `null`.
+
 ### `tree.insert(key, value)`
 Creates a new tree with the new pair inserted.
 

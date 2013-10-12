@@ -6,6 +6,7 @@ module.exports = createRBTree
 
 var RED   = 0
 var BLACK = 1
+var DOUBLE_BLACK = 2
 
 function RBNode(color, key, value, left, right, count) {
   this.key = key

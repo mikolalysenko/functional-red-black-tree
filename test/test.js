@@ -64,16 +64,33 @@ tape(function(t) {
     var next = u.insert(x, true)
     checkTree(u, t)
     checkTree(next, t)
-
     arr.sort(function(a,b) { return a-b })
     var ptr = 0
     u.foreach(-Infinity, Infinity, function(k,v) {
       t.equals(k, arr[ptr++])
     })
     t.equals(ptr, arr.length)
-    u = next
     arr.push(x)
+    u = next
   }
+
+  var start = u.begin
+  for(var i=-20, j=0; j<=40; ++i, ++j) {
+    t.equals(u.at(j).key, i, "checking at()")
+    t.equals(start.key, i, "checking iter")
+    if(j < 40) {
+      t.assert(start.hasNext, "hasNext()")
+    } else {
+      t.assert(!start.hasNext, "eof hasNext()")
+    }
+    start.next()
+  }
+  t.assert(!start.valid, "invalid eof iterator")
+  t.assert(!start.hasNext, "hasNext() at eof fail")
+
+
+
+
 
 
   t.end()
