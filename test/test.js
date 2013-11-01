@@ -127,12 +127,16 @@ tape("bounds searching", function(t) {
 */
 
 tape("remove()", function(t) {
-  var u = iota(22).reduce(function(u, k, v) {
+  var u = iota(20).reduce(function(u, k, v) {
     return u.insert(k, v)
   }, makeTree())
 
-  print(u.remove(0))
+  print(u)
+  print(u.remove(12))
 
+  for(var i=0; i<20; ++i) {
+    checkTree(u.remove(i), t)
+  }
 
 
   t.end()

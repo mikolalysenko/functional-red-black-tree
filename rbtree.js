@@ -5,7 +5,6 @@ module.exports = createRBTree
 var RED   = 0
 var BLACK = 1
 var DOUBLE_BLACK = 2
-var WHITE = 3
 
 function RBNode(color, key, value, left, right, count) {
   this._color = color
@@ -500,6 +499,128 @@ function swapNode(n, v) {
   n._count = v._count
 }
 
+//Fix up a double black node in a tree
+function fixDoubleBlack(stack) {
+  var n, p, s, z
+  for(var i=stack.length-1; i>=0; --i) {
+    n = stack[i]
+    if(i === 0) {
+      n._color = BLACK
+      return
+    }
+    p = stack[i-1]
+    if(p.left === n) {
+      s = p.right
+      //Check case 1:
+      if(s.right && s.right._color === RED) {
+        s = p.right = cloneNode(s)
+        z = s.right = cloneNode(s.right)
+        p.right = s.left
+        s.left = p
+        s.right = z
+        z._color = BLACK
+        recount(p)
+        recount(s)
+        return
+      } else if(s.left && s.left._color === RED) {
+        s = p.right = cloneNode(s)
+        z = s.left = cloneNode(s.left)
+        p.right = z.left
+        s.left = z.right
+        z.left = p
+        z.right = s
+        z._color = BLACK
+        recount(p)
+        recount(s)
+        recount(z)
+        return
+      }
+      if(s._color === BLACK) {
+        //Case 2: black sibling
+        if(p._color === RED) {
+          p._color = BLACK
+          p.right = repaint(RED, s)
+          return
+        } else {
+          p._color = DOUBLE_BLACK
+          p.right = repaint(RED, s)
+          continue  
+        }
+      } else {
+        //Case 3: red sibling
+        //Restructure again
+        s = cloneNode(s)
+        p.right = s.left
+        s.left = p
+        recount(p)
+        recount(s)
+        stack[i-1] = s
+        stack[i] = p
+        if(i >= stack.length-1) {
+          stack.push(v)
+        } else {
+          stack[i+1] = v
+        }
+        i = i+1
+      }
+    } else {
+      s = p.left
+      //Check case 1:
+      if(s.left && s.left._color === RED) {
+        s = p.left = cloneNode(s)
+        z = s.left = cloneNode(s.left)
+        p.left = s.right
+        s.right = p
+        s.left = z
+        z._color = BLACK
+        recount(p)
+        recount(s)
+        return
+      } else if(s.right && s.right._color === RED) {
+        s = p.left = cloneNode(s)
+        z = s.right = cloneNode(s.right)
+        p.left = z.right
+        s.right = z.left
+        z.right = p
+        z.left = s
+        z._color = BLACK
+        recount(p)
+        recount(s)
+        recount(z)
+        return
+      }
+      if(s._color === BLACK) {
+        //Case 2: black sibling
+        if(p._color === RED) {
+          p._color = BLACK
+          p.left = repaint(RED, s)
+          return
+        } else {
+          p._color = DOUBLE_BLACK
+          p.left = repaint(RED, s)
+          continue  
+        }
+      } else {
+        //Case 3: red sibling
+        //Restructure again
+        s = cloneNode(s)
+        p.left = s.right
+        s.right = p
+        recount(p)
+        recount(s)
+        stack[i-1] = s
+        stack[i] = p
+        if(i >= stack.length-1) {
+          stack.push(v)
+        } else {
+          stack[i+1] = v
+        }
+        i = i+1
+      }
+    }
+  }
+}
+
 //Removes item at iterator from tree
 iproto.remove = function() {
   var stack = this._stack
@@ -580,11 +701,18 @@ iproto.remove = function() {
     } else {
       //Hard case: Repaint n, and then do some nasty stuff
       console.log("BLACK leaf")
-      n._color = WHITE
+      n._color = DOUBLE_BLACK
       for(var i=0; i<cstack.length; ++i) {
         cstack[i]._count--
       }
-
+      var parent = cstack[cstack.length-2]
+      fixDoubleBlack(cstack)
+      //Fix up links
+      if(parent.left === n) {
+        parent.left = null
+      } else {
+        parent.right = null
+      }
     }
   }
   return new RedBlackTree(this.tree._compare, cstack[0])
