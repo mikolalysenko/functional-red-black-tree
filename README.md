@@ -32,9 +32,6 @@ var t4 = t3.remove(1)
 ```
 
 
-
-
-
 # API
 
 ```javascript

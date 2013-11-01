@@ -1,7 +1,5 @@
 "use strict"
 
-var util = require("util")
-
 module.exports = createRBTree
 
 var RED   = 0
@@ -492,7 +490,6 @@ iproto.clone = function() {
   return new RedBlackTreeIterator(this.tree, this._stack.slice())
 }
 
-
 //Swaps two nodes
 function swapNode(n, v) {
   n.key = v.key
@@ -505,54 +502,52 @@ function swapNode(n, v) {
 
 //Removes item at iterator from tree
 iproto.remove = function() {
-  if(this._stack.length === 0) {
+  var stack = this._stack
+  if(stack.length === 0) {
     return this.tree
   }
   //First copy path to node
-  var cstack = new Array(this._stack.length)
-  var n = this._stack[this._stack.length-1]
+  var cstack = new Array(stack.length)
+  var n = stack[stack.length-1]
   cstack[cstack.length-1] = new RBNode(n._color, n.key, n.value, n.left, n.right, n._count)
-  for(var i=this._stack.length-1; i>=0; --i) {
-    var n = this._stack[i]
-    if(n.left === this.stack[i+1]) {
+  for(var i=stack.length-2; i>=0; --i) {
+    var n = stack[i]
+    if(n.left === stack[i+1]) {
       cstack[i] = new RBNode(n._color, n.key, n.value, cstack[i+1], n.right, n._count)
     } else {
       cstack[i] = new RBNode(n._color, n.key, n.value, n.left, cstack[i+1], n._count)
     }
   }
-
   //Get node
   n = cstack[cstack.length-1]
-
   //If not leaf, then swap with previous node
   if(n.left && n.right) {
     //First walk to previous leaf
     var split = cstack.length
-    cstack.push(n)
     n = n.left
     while(n.right) {
       cstack.push(n)
       n = n.right
     }
-
     //Copy path to leaf
-    n = new RBNode(n._color, n.key, n.value, n.left, n.right, n._count)
-    cstack.push(n)
-    for(var i=cstack.length-2; i>=split; --i) {
-      cstack[i] = new RBNode(v._color, v.key, v.value, v.left, cstack[i+1], v._count-1)
-    }
+    var v = cstack[split-1]
+    cstack.push(new RBNode(n._color, v.key, v.value, n.left, n.right, n._count))
     cstack[split-1].key = n.key
     cstack[split-1].value = n.value
+
+    //Fix up stack
+    for(var i=cstack.length-2; i>=split; --i) {
+      n = cstack[i]
+      cstack[i] = new RBNode(n._color, n.key, n.value, n.left, cstack[i+1], n._count)
+    }
     cstack[split-1].left = cstack[split]
   }
-
   //Remove leaf node
+  n = cstack[cstack.length-1]
   if(n._color === RED) {
     //Easy case: removing red leaf
-    if(cstack.length === 1) {
-      return new RBTree(this.tree._compare, null)
-    }
-    var p = cstack[cstack.length-1]
+    console.log("RED leaf")
+    var p = cstack[cstack.length-2]
     if(p.left === n) {
       p.left = null
     } else if(p.right === n) {
@@ -562,10 +557,11 @@ iproto.remove = function() {
     for(var i=0; i<cstack.length; ++i) {
       cstack[i]._count--
     }
-    return new RBTree(this.tree._compare, cstack[0])
+    return new RedBlackTree(this.tree._compare, cstack[0])
   } else {
     if(n.left || n.right) {
       //Second easy case:  Single child black parent
+      console.log("BLACK single child")
       if(n.left) {
         swapNode(n, n.left)
       } else if(n.right) {
@@ -576,24 +572,22 @@ iproto.remove = function() {
       for(var i=0; i<cstack.length; ++i) {
         cstack[i]._count--
       }
-      return new RBTree(this.tree._compare, cstack[0])
+      return new RedBlackTree(this.tree._compare, cstack[0])
     } else if(cstack.length === 1) {
       //Third easy case: root
-      return new RBTree(this.tree._compare, null)
+      console.log("ROOT")
+      return new RedBlackTree(this.tree._compare, null)
     } else {
       //Hard case: Repaint n, and then do some nasty stuff
+      console.log("BLACK leaf")
       n._color = WHITE
       for(var i=0; i<cstack.length; ++i) {
         cstack[i]._count--
       }
 
-
-
-
     }
   }
- 
-  return new RBTree(this.tree._compare, cstack[0])
+  return new RedBlackTree(this.tree._compare, cstack[0])
 }
 
 //Returns key

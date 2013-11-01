@@ -3,6 +3,7 @@
 var makeTree = require("../rbtree.js")
 var tape = require("tape")
 var util = require("util")
+var iota = require("iota-array")
 
 function printTree(tree) {
   if(!tree) {
@@ -11,6 +12,9 @@ function printTree(tree) {
   return [ tree._color ? "b":"r", tree.key, printTree(tree.left), printTree(tree.right) ]
 }
 
+function print(t) {
+  console.log(util.inspect(printTree(t.root), {depth:12}))
+}
 
 //Ensures the red black axioms are satisfied by tree
 function checkTree(tree, t) {
@@ -44,6 +48,7 @@ function checkTree(tree, t) {
   t.equals(r[1], tree.size, "tree size")
   //console.log(util.inspect(printTree(tree.root), {depth:10}))
 }
+/*
 
 tape("insert()", function(t) {
   var t1 = makeTree()
@@ -119,8 +124,17 @@ tape("bounds searching", function(t) {
 
   t.end()
 })
+*/
 
 tape("remove()", function(t) {
+  var u = iota(22).reduce(function(u, k, v) {
+    return u.insert(k, v)
+  }, makeTree())
+
+  print(u.remove(0))
+
+
+
   t.end()
 })
 
