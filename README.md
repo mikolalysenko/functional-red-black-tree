@@ -6,6 +6,8 @@ Functional data structures allow for non-destructive updates.  So if you insert 
 
 Some advantages of this is that it is possible to apply insertions and removals to the tree while still iterating over previous versions of the tree.  Functional and persistent data structures can also be useful in many geometric algorithms like point location within triangulations or ray queries.
 
+This added power though comes at a cost.  Over the course of many updates functional trees use more memory and are slower than ordinary search trees.  However, if you need the functional capabilities then this trade off may be worthwhile.
+
 NOT YET FINISHED
 
 # Install
@@ -27,7 +29,12 @@ var t3 = t2.insert(2, "bar")
 
 //Remove something
 var t4 = t3.remove(1)
+
+//Query the tree
+
 ```
+
+
 
 # API
 
@@ -72,28 +79,28 @@ Removes the first item with `key` in the tree
 
 **Returns** A new tree with the given item removed if it exists
 
-### `tree.leastLower(key)`
+### `tree.ge(key)`
 Find the first item in the tree whose key is `>= key`
 
 * `key` is the key to search for
 
 **Returns** An iterator at the given element.
 
-### `tree.greatestLower(key)`
+### `tree.gt(key)`
 Finds the first item in the tree whose key is `> key`
 
 * `key` is the key to search for
 
 **Returns** An iterator at the given element
 
-### `tree.leastUpper(key)`
+### `tree.lt(key)`
 Finds the last item in the tree whose key is `< key`
 
 * `key` is the key to search for
 
 **Returns** An iterator at the given element
 
-### `tree.greatestUpper(key)`
+### `tree.le(key)`
 Finds the last item in the tree whose key is `<= key`
 
 * `key` is the key to search for
@@ -112,6 +119,16 @@ An iterator pointing to the first element in the tree
 
 ### `tree.end`
 An iterator pointing to the last element in the tree
+
+
+### `tree.foreach([lo, hi,] visitor(key,value))`
+Walks a visitor function over the nodes of the tree in order.
+
+* `lo` is an optional start of the range to visit (inclusive)
+* `hi` is an optional end of the range to visit (non-inclusive)
+* `visitor(key,value)` is a callback that gets executed on each node.  If a truthy value is returned from the visitor, then iteration is stopped.
+
+**Returns** The last value returned by the callback
 
 ## Node properties
 Each node of the tree has the following properties:
@@ -155,6 +172,11 @@ Makes a copy of the iterator
 Removes the item at the position of the iterator
 
 **Returns** A new binary search tree with `iter`'s item removed
+
+### `iter.update(value)`
+Updates the value of the node in the tree at this iterator
+
+**Returns** A new binary search tree with the corresponding node updated
 
 ### `iter.next()`
 Advances the iterator to the next position

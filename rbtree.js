@@ -7,14 +7,19 @@ module.exports = createRBTree
 var RED   = 0
 var BLACK = 1
 var DOUBLE_BLACK = 2
+var WHITE = 3
 
 function RBNode(color, key, value, left, right, count) {
+  this._color = color
   this.key = key
   this.value = value
   this.left = left
   this.right = right
-  this._color = color
   this._count = count
+}
+
+function cloneNode(node) {
+  return new RBNode(node._color, node.key, node.value, node.left, node.right, node._count)
 }
 
 function repaint(color, node) {
@@ -25,12 +30,28 @@ function recount(node) {
   node._count = 1 + (node.left ? node.left._count : 0) + (node.right ? node.right._count : 0)
 }
 
+function toJSON(node) {
+  var result = { color: node._color ? "black" : "red", key: node.key, value: node.value }
+  if(node.left) {
+    result.left = toJSON(node.left)
+  }
+  if(node.right) {
+    result.right = toJSON(node.right)
+  }
+  return result
+}
+
 function RedBlackTree(compare, root) {
   this._compare = compare
   this.root = root
 }
 
 var proto = RedBlackTree.prototype
+
+//Converts the tree into a JSON object
+proto.toJSON = function() {
+  return toJSON(this.root)
+}
 
 //Returns the number of nodes in the tree
 Object.defineProperty(proto, "size", {
@@ -236,7 +257,22 @@ function doVisit(lo, hi, compare, visit, node) {
 }
 
 proto.foreach = function(lo, hi, visit) {
-  return doVisit(lo, hi, this._compare, visit, this.root)
+  switch(arguments.length) {
+    case 1:
+      throw new Error("full traverse not implemented")
+    break
+
+    case 2:
+      throw new Error("half traverse not implemented")
+    break
+
+    case 3:
+      if(this._compare(lo, hi) >= 0) {
+        return
+      }
+      return doVisit(lo, hi, this._compare, visit, this.root)
+    break
+  }
 }
 
 //First item in list
@@ -292,8 +328,7 @@ proto.at = function(idx) {
   return new RedBlackTreeIterator(this, [])
 }
 
-//Least-lower-bound
-proto.leastLower = function(key) {
+proto.ge = function(key) {
   var cmp = this._compare
   var n = this.root
   var stack = []
@@ -314,9 +349,7 @@ proto.leastLower = function(key) {
   return new RedBlackTreeIterator(this, stack)
 }
 
-
-//Greatest-lower-bound
-proto.greatestLower = function(key) {
+proto.gt = function(key) {
   var cmp = this._compare
   var n = this.root
   var stack = []
@@ -337,9 +370,7 @@ proto.greatestLower = function(key) {
   return new RedBlackTreeIterator(this, stack)
 }
 
-
-//Least-upper-bound
-proto.leastUpper = function(key) {
+proto.lt = function(key) {
   var cmp = this._compare
   var n = this.root
   var stack = []
@@ -360,9 +391,7 @@ proto.leastUpper = function(key) {
   return new RedBlackTreeIterator(this, stack)
 }
 
-
-//Greatest-upper-bound
-proto.greatestUpper = function(key) {
+proto.le = function(key) {
   var cmp = this._compare
   var n = this.root
   var stack = []
@@ -461,12 +490,108 @@ iproto.clone = function() {
   return new RedBlackTreeIterator(this.tree, this._stack.slice())
 }
 
+
+//Swaps two nodes
+function swapNode(n, v) {
+  n.key = v.key
+  n.value = v.value
+  n.left = v.left
+  n.right = v.right
+  n._color = v._color
+  n._count = v._count
+}
+
 //Removes item at iterator from tree
 iproto.remove = function() {
   if(this._stack.length === 0) {
     return this.tree
   }
-  throw new Error("Not implemented")
+  //First copy path to node
+  var cstack = new Array(this._stack.length)
+  var n = this._stack[this._stack.length-1]
+  cstack[cstack.length-1] = new RBNode(n._color, n.key, n.value, n.left, n.right, n._count)
+  for(var i=this._stack.length-1; i>=0; --i) {
+    var n = this._stack[i]
+    if(n.left === this.stack[i+1]) {
+      cstack[i] = new RBNode(n._color, n.key, n.value, cstack[i+1], n.right, n._count)
+    } else {
+      cstack[i] = new RBNode(n._color, n.key, n.value, n.left, cstack[i+1], n._count)
+    }
+  }
+
+  //Get node
+  n = cstack[cstack.length-1]
+
+  //If not leaf, then swap with previous node
+  if(n.left && n.right) {
+    //First walk to previous leaf
+    var split = cstack.length
+    cstack.push(n)
+    n = n.left
+    while(n.right) {
+      cstack.push(n)
+      n = n.right
+    }
+
+    //Copy path to leaf
+    n = new RBNode(n._color, n.key, n.value, n.left, n.right, n._count)
+    cstack.push(n)
+    for(var i=cstack.length-2; i>=split; --i) {
+      cstack[i] = new RBNode(v._color, v.key, v.value, v.left, cstack[i+1], v._count-1)
+    }
+    cstack[split-1].key = n.key
+    cstack[split-1].value = n.value
+    cstack[split-1].left = cstack[split]
+  }
+
+  //Remove leaf node
+  if(n._color === RED) {
+    //Easy case: removing red leaf
+    if(cstack.length === 1) {
+      return new RBTree(this.tree._compare, null)
+    }
+    var p = cstack[cstack.length-1]
+    if(p.left === n) {
+      p.left = null
+    } else if(p.right === n) {
+      p.right = null
+    }
+    cstack.pop()
+    for(var i=0; i<cstack.length; ++i) {
+      cstack[i]._count--
+    }
+    return new RBTree(this.tree._compare, cstack[0])
+  } else {
+    if(n.left || n.right) {
+      //Second easy case:  Single child black parent
+      if(n.left) {
+        swapNode(n, n.left)
+      } else if(n.right) {
+        swapNode(n, n.right)
+      }
+      //Child must be red, so repaint it black to balance color
+      n._color = BLACK
+      for(var i=0; i<cstack.length; ++i) {
+        cstack[i]._count--
+      }
+      return new RBTree(this.tree._compare, cstack[0])
+    } else if(cstack.length === 1) {
+      //Third easy case: root
+      return new RBTree(this.tree._compare, null)
+    } else {
+      //Hard case: Repaint n, and then do some nasty stuff
+      n._color = WHITE
+      for(var i=0; i<cstack.length; ++i) {
+        cstack[i]._count--
+      }
+
+
+
+
+    }
+  }
+ 
+  return new RBTree(this.tree._compare, cstack[0])
 }
 
 //Returns key
@@ -494,7 +619,26 @@ Object.defineProperty(iproto, "value", {
 //Returns the position of this iterator in the sorted list
 Object.defineProperty(iproto, "index", {
   get: function() {
-    throw new Error("Not implemented")
+    var idx = 0
+    var stack = this._stack
+    if(stack.length === 0) {
+      var r = this.tree.root
+      if(r) {
+        return r._count
+      }
+      return 0
+    } else if(stack[stack.length-1].left) {
+      idx = stack[stack.length-1].left._count
+    }
+    for(var s=stack.length-2; s>=0; --s) {
+      if(stack[s+1] === stack[s].right) {
+        ++idx
+        if(stack[s].left) {
+          idx += stack[s].left._count
+        }
+      }
+    }
+    return idx
   },
   enumerable: true
 })
@@ -539,6 +683,26 @@ Object.defineProperty(iproto, "hasNext", {
     return false
   }
 })
+
+//Update value
+iproto.update = function(value) {
+  var stack = this._stack
+  if(stack.length === 0) {
+    throw new Error("Can't update empty node!")
+  }
+  var cstack = new Array(stack.length)
+  var n = stack[stack.length-1]
+  cstack[cstack.length-1] = new RBNode(n._color, n.key, value, n.left, n.right, n._count)
+  for(var i=stack.length-2; i>=0; --i) {
+    n = stack[i]
+    if(n.left === stack[i+1]) {
+      cstack[i] = new RBNode(n._color, n.key, n.value, cstack[i+1], n.right, n._count)
+    } else {
+      cstack[i] = new RBNode(n._color, n.key, n.value, n.left, cstack[i+1], n._count)
+    }
+  }
+  return new RBTree(this.tree._compare, cstack[0])
+}
 
 //Moves iterator backward one element
 iproto.prev = function() {

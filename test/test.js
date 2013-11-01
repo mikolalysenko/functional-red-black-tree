@@ -45,7 +45,7 @@ function checkTree(tree, t) {
   //console.log(util.inspect(printTree(tree.root), {depth:10}))
 }
 
-tape(function(t) {
+tape("insert()", function(t) {
   var t1 = makeTree()
   
   var u = t1
@@ -78,6 +78,8 @@ tape(function(t) {
   for(var i=-20, j=0; j<=40; ++i, ++j) {
     t.equals(u.at(j).key, i, "checking at()")
     t.equals(start.key, i, "checking iter")
+    t.equals(start.index, j, "checking index")
+    t.assert(start.valid, "checking valid")
     if(j < 40) {
       t.assert(start.hasNext, "hasNext()")
     } else {
@@ -87,11 +89,41 @@ tape(function(t) {
   }
   t.assert(!start.valid, "invalid eof iterator")
   t.assert(!start.hasNext, "hasNext() at eof fail")
+  t.equals(start.index, 41, "eof index")
 
+  t.end()
+})
 
+tape("bounds searching", function(t) {
 
+  var arr = [0, 1, 1, 1, 1, 2, 3, 4, 5, 6, 6 ]
 
+  var u = arr.reduce(function(u, k, v) {
+    return u.insert(k, v)
+  }, makeTree())
 
+  console.log(u.toJSON())
 
+  t.equals(u.ge(3).index, 6, "leastLower simple")
+  t.equals(u.ge(1).index, 1, "leastLower start")
+  t.equals(u.ge(0.9).index, 1, "leastLower end")
+  t.equals(u.ge(1.1).index, 5, "leastLower end")
+  t.equals(u.ge(100).index, 11, "leastLower eof")
+  t.equals(u.ge(-1).index, 0, "leastLower index")
+  
+
+  t.equals(u.gt(3).index, 7, "greatestLower simple")
+  t.equals(u.gt(1).index, 5, "greatestLower repeat")
+  t.equals(u.gt(0.9).index, 1, "greatestLower start")
+  t.equals(u.gt(100).index, 11, "greatestLower eof")
+
+  t.end()
+})
+
+tape("remove()", function(t) {
+  t.end()
+})
+
+tape("update()", function(t) {
   t.end()
 })
