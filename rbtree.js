@@ -476,13 +476,15 @@ Object.defineProperty(iproto, "valid", {
   }
 })
 
+//Node of the iterator
 Object.defineProperty(iproto, "node", {
   get: function() {
     if(this._stack.length > 0) {
       return this._stack[this._stack.length-1]
     }
     return null
-  }
+  },
+  enumerable: true
 })
 
 //Makes a copy of an iterator
@@ -615,6 +617,7 @@ Object.defineProperty(iproto, "value", {
   },
   enumerable: true
 })
+
 
 //Returns the position of this iterator in the sorted list
 Object.defineProperty(iproto, "index", {
