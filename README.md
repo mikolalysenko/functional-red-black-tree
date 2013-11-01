@@ -38,6 +38,43 @@ var t4 = t3.remove(1)
 var createTree = require("functional-red-black-tree")
 ```
 
+## Overview
+
+- [Tree methods](#tree-methods)
+  - [`var tree = createTree([compare])`](#var-tree-=-createtreecompare)
+  - [`tree.root`](#treeroot)
+  - [`tree.get(key)`](#treegetkey)
+  - [`tree.find(key)`](#treefindkey)
+  - [`tree.insert(key, value)`](#treeinsertkey-value)
+  - [`tree.remove(key)`](#treeremovekey)
+  - [`tree.ge(key)`](#treegekey)
+  - [`tree.gt(key)`](#treegtkey)
+  - [`tree.lt(key)`](#treeltkey)
+  - [`tree.le(key)`](#treelekey)
+  - [`tree.at(position)`](#treeatposition)
+  - [`tree.begin`](#treebegin)
+  - [`tree.end`](#treeend)
+  - [`tree.foreach([lo, hi,] visitor(key,value))`](#treeforeachlo-hi-visitorkeyvalue)
+- [Node properties](#node-properties)
+  - [`node.key`](#nodekey)
+  - [`node.value`](#nodevalue)
+  - [`node.left`](#nodeleft)
+  - [`node.right`](#noderight)
+- [Iterator methods](#iterator-methods)
+  - [`iter.key`](#iterkey)
+  - [`iter.value`](#itervalue)
+  - [`iter.node`](#iternode)
+  - [`iter.tree`](#itertree)
+  - [`iter.index`](#iterindex)
+  - [`iter.valid`](#itervalid)
+  - [`iter.clone()`](#iterclone)
+  - [`iter.remove()`](#iterremove)
+  - [`iter.update(value)`](#iterupdatevalue)
+  - [`iter.next()`](#iternext)
+  - [`iter.prev()`](#iterprev)
+  - [`iter.hasNext`](#iterhasnext)
+  - [`iter.hasPrev`](#iterhasprev)
+
 ## Tree methods
 
 ### `var tree = createTree([compare])`
