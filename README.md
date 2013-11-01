@@ -44,9 +44,9 @@ var createTree = require("functional-red-black-tree")
   - [`var tree = createTree([compare])`](#var-tree-=-createtreecompare)
   - [`tree.root`](#treeroot)
   - [`tree.get(key)`](#treegetkey)
-  - [`tree.find(key)`](#treefindkey)
   - [`tree.insert(key, value)`](#treeinsertkey-value)
   - [`tree.remove(key)`](#treeremovekey)
+  - [`tree.find(key)`](#treefindkey)
   - [`tree.ge(key)`](#treegekey)
   - [`tree.gt(key)`](#treegtkey)
   - [`tree.lt(key)`](#treeltkey)
@@ -55,6 +55,8 @@ var createTree = require("functional-red-black-tree")
   - [`tree.begin`](#treebegin)
   - [`tree.end`](#treeend)
   - [`tree.foreach([lo, hi,] visitor(key,value))`](#treeforeachlo-hi-visitorkeyvalue)
+  - [`tree.keys`](#treekeys)
+  - [`tree.values`](#treevalues)
 - [Node properties](#node-properties)
   - [`node.key`](#nodekey)
   - [`node.value`](#nodevalue)
@@ -94,9 +96,6 @@ Retrieves the value associated to the given key
 
 **Returns** The value of the first node associated to `key`
 
-### `tree.find(key)`
-Returns an iterator pointing to the first item in the tree with `key`, otherwise `null`.
-
 ### `tree.insert(key, value)`
 Creates a new tree with the new pair inserted.
 
@@ -111,6 +110,9 @@ Removes the first item with `key` in the tree
 * `key` is the key of the item to remove
 
 **Returns** A new tree with the given item removed if it exists
+
+### `tree.find(key)`
+Returns an iterator pointing to the first item in the tree with `key`, otherwise `null`.
 
 ### `tree.ge(key)`
 Find the first item in the tree whose key is `>= key`
@@ -153,7 +155,6 @@ An iterator pointing to the first element in the tree
 ### `tree.end`
 An iterator pointing to the last element in the tree
 
-
 ### `tree.foreach([lo, hi,] visitor(key,value))`
 Walks a visitor function over the nodes of the tree in order.
 
@@ -162,6 +163,12 @@ Walks a visitor function over the nodes of the tree in order.
 * `visitor(key,value)` is a callback that gets executed on each node.  If a truthy value is returned from the visitor, then iteration is stopped.
 
 **Returns** The last value returned by the callback
+
+### `tree.keys`
+A sorted array of all the keys in the tree
+
+### `tree.values`
+An array array of all the values in the tree
 
 ## Node properties
 Each node of the tree has the following properties:

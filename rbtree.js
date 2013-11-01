@@ -45,6 +45,26 @@ function RedBlackTree(compare, root) {
 
 var proto = RedBlackTree.prototype
 
+Object.defineProperty(proto, "keys", {
+  get: function() {
+    var result = []
+    this.foreach(function(k,v) {
+      result.push(k)
+    })
+    return result
+  }
+})
+
+Object.defineProperty(proto, "values", {
+  get: function() {
+    var result = []
+    this.foreach(function(k,v) {
+      result.push(v)
+    })
+    return result
+  }
+})
+
 //Converts the tree into a JSON object
 proto.toJSON = function() {
   return toJSON(this.root)
@@ -253,10 +273,20 @@ function doVisit(lo, hi, compare, visit, node) {
   return
 }
 
+function doVisitFull(visit, node) {
+  if(node.left) {
+    doVisitFull(visit, node.left)
+  }
+  visit(node.key, node.value)
+  if(node.right) {
+    doVisitFull(visit, node.right)
+  }
+}
+
 proto.foreach = function(lo, hi, visit) {
   switch(arguments.length) {
     case 1:
-      throw new Error("full traverse not implemented")
+      doVisitFull(lo, this.root)
     break
 
     case 2:
