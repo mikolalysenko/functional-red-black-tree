@@ -239,52 +239,68 @@ proto.insert = function(key, value) {
   return new RedBlackTree(cmp, n_stack[0])
 }
 
+
+//Visit all nodes inorder
+function doVisitFull(visit, node) {
+  if(node.left) {
+    var v = doVisitFull(visit, node.left)
+    if(v) { return v }
+  }
+  var v = visit(node.key, node.value)
+  if(v) { return v }
+  if(node.right) {
+    return doVisitFull(visit, node.right)
+  }
+}
+
+//Visit half nodes in order
+function doVisitHalf(lo, compare, visit, node) {
+  var l = compare(lo, node.key)
+  if(l <= 0) {
+    if(node.left) {
+      var v = doVisitHalf(lo, compare, visit, node.left)
+      if(v) { return v }
+    }
+    var v = visit(node.key, node.value)
+    if(v) { return v }
+  }
+  if(node.right) {
+    return doVisitHalf(lo, compare, visit, node.right)
+  }
+}
+
 //Visit all nodes within a range
 function doVisit(lo, hi, compare, visit, node) {
-  if(!node) {
-    return
-  }
   var l = compare(lo, node.key)
   var h = compare(hi, node.key)
+  var v
   if(l <= 0) {
-    var v = doVisit(lo, hi, compare, visit, node.left)
-    if(v) {
-      return v
+    if(node.left) {
+      v = doVisit(lo, hi, compare, visit, node.left)
+      if(v) { return v }
     }
     if(h > 0) {
       v = visit(node.key, node.value)
-      if(v) {
-        return v
-      }
+      if(v) { return v }
     }
   }
-  if(h > 0) {
-    var v = doVisit(lo, hi, compare, visit, node.right)
-    if(v) {
-      return v
-    }
-  }
-  return
-}
-
-function doVisitFull(visit, node) {
-  if(node.left) {
-    doVisitFull(visit, node.left)
-  }
-  visit(node.key, node.value)
-  if(node.right) {
-    doVisitFull(visit, node.right)
+  if(h > 0 && node.right) {
+    return doVisit(lo, hi, compare, visit, node.right)
   }
 }
 
-proto.foreach = function(lo, hi, visit) {
+
+proto.foreach = function(visit, lo, hi) {
+  if(!this.root) {
+    return
+  }
   switch(arguments.length) {
     case 1:
-      doVisitFull(lo, this.root)
+      return doVisitFull(visit, this.root)
     break
 
     case 2:
-      throw new Error("half traverse not implemented")
+      return doVisitHalf(lo, this._compare, visit, this.root)
     break
 
     case 3:

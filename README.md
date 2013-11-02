@@ -56,7 +56,7 @@ var createTree = require("functional-red-black-tree")
   - [`tree.at(position)`](#treeatposition)
   - [`tree.begin`](#treebegin)
   - [`tree.end`](#treeend)
-  - [`tree.foreach([lo, hi,] visitor(key,value))`](#treeforeachlo-hi-visitorkeyvalue)
+  - [`tree.foreach(visitor(key,value)[, lo[, hi]])`](#treeforeachlo-hi-visitorkeyvalue)
   - [`tree.root`](#treeroot)
 - [Node properties](#node-properties)
   - [`node.key`](#nodekey)
@@ -162,12 +162,12 @@ An iterator pointing to the first element in the tree
 ### `tree.end`
 An iterator pointing to the last element in the tree
 
-### `tree.foreach([lo, hi,] visitor(key,value))`
+### `tree.foreach(visitor(key,value)[, lo[, hi]])`
 Walks a visitor function over the nodes of the tree in order.
 
+* `visitor(key,value)` is a callback that gets executed on each node.  If a truthy value is returned from the visitor, then iteration is stopped.
 * `lo` is an optional start of the range to visit (inclusive)
 * `hi` is an optional end of the range to visit (non-inclusive)
-* `visitor(key,value)` is a callback that gets executed on each node.  If a truthy value is returned from the visitor, then iteration is stopped.
 
 **Returns** The last value returned by the callback
 

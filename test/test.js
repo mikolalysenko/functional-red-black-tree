@@ -49,7 +49,6 @@ function checkTree(tree, t) {
   var r = checkNode(tree.root)
   t.equals(r[1], tree.length, "tree length")
 }
-/*
 
 tape("insert()", function(t) {
   var t1 = makeTree()
@@ -96,6 +95,84 @@ tape("insert()", function(t) {
   t.assert(!start.valid, "invalid eof iterator")
   t.assert(!start.hasNext, "hasNext() at eof fail")
   t.equals(start.index, 41, "eof index")
+
+  t.end()
+})
+
+tape("foreach", function(t) {
+  var u = iota(31).reduce(function(u, k, v) {
+    return u.insert(k, v)
+  }, makeTree())
+
+  //Check basic foreach
+  var visit_keys = []
+  var visit_vals = []
+  u.foreach(function(k,v) {
+    visit_keys.push(k)
+    visit_vals.push(v)
+  })
+  t.same(visit_keys, u.keys)
+  t.same(visit_vals, u.values)
+
+  //Check foreach with termination
+  visit_keys = []
+  visit_vals = []
+  t.equals(u.foreach(function(k,v) {
+    if(k === 5) {
+      return 1000
+    }
+    visit_keys.push(k)
+    visit_vals.push(v)
+  }), 1000)
+  t.same(visit_keys, u.keys.slice(0, 5))
+  t.same(visit_vals, u.values.slice(0, 5))
+
+  //Check half interval foreach
+  visit_keys = []
+  visit_vals = []
+  u.foreach(function(k,v) {
+    visit_keys.push(k)
+    visit_vals.push(v)
+  }, 3)
+  t.same(visit_keys, u.keys.slice(3))
+  t.same(visit_vals, u.values.slice(3))
+
+  //Check half interval foreach with termination
+  visit_keys = []
+  visit_vals = []
+  t.equals(u.foreach(function(k,v) {
+    if(k === 12) {
+      return 1000
+    }
+    visit_keys.push(k)
+    visit_vals.push(v)
+  }, 3), 1000)
+  t.same(visit_keys, u.keys.slice(3, 12))
+  t.same(visit_vals, u.values.slice(3, 12))
+
+
+  //Check interval foreach
+  visit_keys = []
+  visit_vals = []
+  u.foreach(function(k,v) {
+    visit_keys.push(k)
+    visit_vals.push(v)
+  }, 3, 15)
+  t.same(visit_keys, u.keys.slice(3, 15))
+  t.same(visit_vals, u.values.slice(3, 15))
+
+  //Check interval foreach with termination
+  visit_keys = []
+  visit_vals = []
+  t.equals(u.foreach(function(k,v) {
+    if(k === 12) {
+      return 1000
+    }
+    visit_keys.push(k)
+    visit_vals.push(v)
+  }, 3, 15), 1000)
+  t.same(visit_keys, u.keys.slice(3, 12))
+  t.same(visit_vals, u.values.slice(3, 12))
 
   t.end()
 })
@@ -269,12 +346,6 @@ tape("searching", function(t) {
   }
   t.equals(u.at(-1).valid, false, "at missing small")
   t.equals(u.at(1000).valid, false, "at missing big")
-
-  t.end()
-})
-*/
-
-tape("foreach", function(t) {
 
   t.end()
 })
