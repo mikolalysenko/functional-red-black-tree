@@ -26,17 +26,6 @@ function recount(node) {
   node._count = 1 + (node.left ? node.left._count : 0) + (node.right ? node.right._count : 0)
 }
 
-function toJSON(node) {
-  var result = { color: node._color ? "black" : "red", key: node.key, value: node.value }
-  if(node.left) {
-    result.left = toJSON(node.left)
-  }
-  if(node.right) {
-    result.right = toJSON(node.right)
-  }
-  return result
-}
-
 function RedBlackTree(compare, root) {
   this._compare = compare
   this.root = root
