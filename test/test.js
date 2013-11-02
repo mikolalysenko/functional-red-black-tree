@@ -47,9 +47,9 @@ function checkTree(tree, t) {
     return [cl[0] + node._color,  cl[1] + cr[1] + 1]
   }
   var r = checkNode(tree.root)
-  t.equals(r[1], tree.size, "tree size")
-  //console.log(util.inspect(printTree(tree.root), {depth:10}))
+  t.equals(r[1], tree.length, "tree length")
 }
+/*
 
 tape("insert()", function(t) {
   var t1 = makeTree()
@@ -61,7 +61,7 @@ tape("insert()", function(t) {
     var next = u.insert(x, true)
     checkTree(u, t)
     checkTree(next, t)
-    t.equals(u.size, arr.length)
+    t.equals(u.length, arr.length)
     arr.push(x)
     u = next
   }
@@ -100,6 +100,86 @@ tape("insert()", function(t) {
   t.end()
 })
 
+function compareIterators(a, b, t) {
+  t.equals(a.tree, b.tree, "iter trees")
+  t.equals(a.valid, b.valid, "iter validity")
+  if(!b.valid) {
+    return
+  }
+  t.equals(a.node, b.node, "iter node")
+  t.equals(a.key, b.key, "iter key")
+  t.equals(a.value, b.value, "iter value")
+  t.equals(a.index, b.index, "iter index")
+}
+
+tape("iterators", function(t) {
+  var u = iota(20).reduce(function(u, k, v) {
+    return u.insert(k, v)
+  }, makeTree())
+
+  //Try walking forward
+  var iter = u.begin
+  var c = iter.clone()
+  t.ok(iter.hasNext, "must have next at beginneing")
+  t.ok(!iter.hasPrev, "must not have predecessor")
+  for(var i=0; i<20; ++i) {
+    var v = u.at(i)
+    compareIterators(iter, v, t)
+    t.equals(iter.index, i)
+    iter.next()
+  }
+  t.ok(!iter.valid, "must be eof iterator")
+
+  //Check if the clone worked
+  compareIterators(c, u.begin, t)
+
+  //Try walking backward
+  var iter = u.end
+  t.ok(!iter.hasNext, "must not have next")
+  t.ok(iter.hasPrev, "must have predecessor")
+  for(var i=19; i>=0; --i) {
+    var v = u.at(i)
+    compareIterators(iter, v, t)
+    t.equals(iter.index, i)
+    iter.prev()
+  }
+  t.ok(!iter.valid, "must be eof iterator")
+
+  t.end()
+})
+
+
+tape("remove()", function(t) {
+
+  var sz = [1, 2,  10, 20, 23, 31, 32, 33]
+  for(var n=0; n<sz.length; ++n) {
+    var c = sz[n]
+    var u = iota(c).reduce(function(u, k, v) {
+      return u.insert(k, v)
+    }, makeTree())
+    for(var i=0; i<c; ++i) {
+      checkTree(u.remove(i), t)
+    }
+  }
+
+  t.end()
+})
+
+tape("update()", function(t) {
+  var arr = [0, 1, 2, 3, 4, 5, 6 ]
+  var u = arr.reduce(function(u, k, v) {
+    return u.insert(k, v)
+  }, makeTree())
+  for(var iter=u.begin; iter.hasNext; iter.next()) {
+    var p = iter.value
+    var updated = iter.update(1000)
+    t.equals(iter.value, iter.key, "ensure no mutation")
+    t.equals(updated.find(iter.key).value, 1000, "ensure update applied")
+    checkTree(updated, t)
+    checkTree(u, t)
+  }
+  t.end()
+})
 
 
 tape("keys and values", function(t) {
@@ -134,7 +214,6 @@ tape("keys and values", function(t) {
 tape("searching", function(t) {
 
   var arr = [0, 1, 1, 1, 1, 2, 3, 4, 5, 6, 6 ]
-
   var u = arr.reduce(function(u, k, v) {
     return u.insert(k, v)
   }, makeTree())
@@ -193,25 +272,9 @@ tape("searching", function(t) {
 
   t.end()
 })
+*/
 
-tape("remove()", function(t) {
-
-  var sz = [1, 2,  10, 20, 23, 31, 32, 33]
-  for(var n=0; n<sz.length; ++n) {
-    var c = sz[n]
-    var u = iota(c).reduce(function(u, k, v) {
-      return u.insert(k, v)
-    }, makeTree())
-    for(var i=0; i<c; ++i) {
-      checkTree(u.remove(i), t)
-    }
-  }
-
-  t.end()
-})
-
-tape("update()", function(t) {
-
+tape("foreach", function(t) {
 
   t.end()
 })

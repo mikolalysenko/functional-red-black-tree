@@ -64,13 +64,8 @@ Object.defineProperty(proto, "values", {
   }
 })
 
-//Converts the tree into a JSON object
-proto.toJSON = function() {
-  return toJSON(this.root)
-}
-
 //Returns the number of nodes in the tree
-Object.defineProperty(proto, "size", {
+Object.defineProperty(proto, "length", {
   get: function() {
     if(this.root) {
       return this.root._count
@@ -937,19 +932,47 @@ iproto.update = function(value) {
       cstack[i] = new RBNode(n._color, n.key, n.value, n.left, cstack[i+1], n._count)
     }
   }
-  return new RBTree(this.tree._compare, cstack[0])
+  return new RedBlackTree(this.tree._compare, cstack[0])
 }
 
 //Moves iterator backward one element
 iproto.prev = function() {
-  throw new Error("Not implemented")
+  var stack = this._stack
+  if(stack.length === 0) {
+    return
+  }
+  var n = stack[stack.length-1]
+  if(n.left) {
+    n = n.left
+    while(n) {
+      stack.push(n)
+      n = n.right
+    }
+  } else {
+    stack.pop()
+    while(stack.length > 0 && stack[stack.length-1].left === n) {
+      n = stack[stack.length-1]
+      stack.pop()
+    }
+  }
 }
-
 
 //Checks if iterator is at start of tree
 Object.defineProperty(iproto, "hasPrev", {
   get: function() {
-    throw new Error("Not implemented")
+    var stack = this._stack
+    if(stack.length === 0) {
+      return false
+    }
+    if(stack[stack.length-1].left) {
+      return true
+    }
+    for(var s=stack.length-1; s>0; --s) {
+      if(stack[s-1].right === stack[s]) {
+        return true
+      }
+    }
+    return false
   }
 })
 

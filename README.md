@@ -42,7 +42,9 @@ var createTree = require("functional-red-black-tree")
 
 - [Tree methods](#tree-methods)
   - [`var tree = createTree([compare])`](#var-tree-=-createtreecompare)
-  - [`tree.root`](#treeroot)
+  - [`tree.keys`](#treekeys)
+  - [`tree.values`](#treevalues)
+  - [`tree.length`](#treelength)
   - [`tree.get(key)`](#treegetkey)
   - [`tree.insert(key, value)`](#treeinsertkey-value)
   - [`tree.remove(key)`](#treeremovekey)
@@ -55,8 +57,7 @@ var createTree = require("functional-red-black-tree")
   - [`tree.begin`](#treebegin)
   - [`tree.end`](#treeend)
   - [`tree.foreach([lo, hi,] visitor(key,value))`](#treeforeachlo-hi-visitorkeyvalue)
-  - [`tree.keys`](#treekeys)
-  - [`tree.values`](#treevalues)
+  - [`tree.root`](#treeroot)
 - [Node properties](#node-properties)
   - [`node.key`](#nodekey)
   - [`node.value`](#nodevalue)
@@ -86,8 +87,14 @@ Creates an empty functional tree
 
 **Returns** An empty tree ordered by `compare`
 
-### `tree.root`
-Returns the root node of the tree
+### `tree.keys`
+A sorted array of all the keys in the tree
+
+### `tree.values`
+An array array of all the values in the tree
+
+### `tree.length`
+The number of items in the tree
 
 ### `tree.get(key)`
 Retrieves the value associated to the given key
@@ -164,11 +171,9 @@ Walks a visitor function over the nodes of the tree in order.
 
 **Returns** The last value returned by the callback
 
-### `tree.keys`
-A sorted array of all the keys in the tree
+### `tree.root`
+Returns the root node of the tree
 
-### `tree.values`
-An array array of all the values in the tree
 
 ## Node properties
 Each node of the tree has the following properties:
