@@ -5,11 +5,13 @@ var tape = require("tape")
 var util = require("util")
 var iota = require("iota-array")
 
+var COLORS = [ "r", "b", "bb" ]
+
 function printTree(tree) {
   if(!tree) {
     return []
   }
-  return [ tree._color ? "b":"r", tree.key, printTree(tree.left), printTree(tree.right) ]
+  return [ COLORS[tree._color], tree.key, printTree(tree.left), printTree(tree.right) ]
 }
 
 function print(t) {
@@ -132,13 +134,10 @@ tape("remove()", function(t) {
   }, makeTree())
 
   print(u)
-  print(u.remove(12))
-
+  print(u.remove(8))
   for(var i=0; i<20; ++i) {
     checkTree(u.remove(i), t)
   }
-
-
   t.end()
 })
 

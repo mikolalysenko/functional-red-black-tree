@@ -4,7 +4,6 @@ module.exports = createRBTree
 
 var RED   = 0
 var BLACK = 1
-var DOUBLE_BLACK = 2
 
 function RBNode(color, key, value, left, right, count) {
   this._color = color
@@ -534,117 +533,196 @@ function fixDoubleBlack(stack) {
   var n, p, s, z
   for(var i=stack.length-1; i>=0; --i) {
     n = stack[i]
+    console.log("visit:", n.value)
     if(i === 0) {
       n._color = BLACK
       return
     }
     p = stack[i-1]
     if(p.left === n) {
+      console.log("left")
       s = p.right
       //Check case 1:
       if(s.right && s.right._color === RED) {
+        console.log("case 1: right sibling child red", p.value, p._color)
         s = p.right = cloneNode(s)
         z = s.right = cloneNode(s.right)
         p.right = s.left
         s.left = p
         s.right = z
+        s._color = p._color
+        n._color = BLACK
+        p._color = BLACK
         z._color = BLACK
         recount(p)
         recount(s)
+        console.log(n.value, p.value, s.value, z.value)
+        if(i > 1) {
+          var pp = stack[i-2]
+          if(pp.left === p) {
+            pp.left = s
+          } else {
+            pp.right = s
+          }
+          recount(pp)
+        }
+        stack[i-1] = s
         return
       } else if(s.left && s.left._color === RED) {
+        console.log("case 1: left sibling child red")
         s = p.right = cloneNode(s)
         z = s.left = cloneNode(s.left)
         p.right = z.left
         s.left = z.right
         z.left = p
         z.right = s
-        z._color = BLACK
+        z._color = p._color
+        p._color = BLACK
+        s._color = BLACK
+        n._color = BLACK
         recount(p)
         recount(s)
         recount(z)
+        if(i > 1) {
+          var pp = stack[i-2]
+          if(pp.left === p) {
+            pp.left = z
+          } else {
+            pp.right = z
+          }
+          recount(pp)
+        }
+        stack[i-1] = s
         return
       }
       if(s._color === BLACK) {
         //Case 2: black sibling
         if(p._color === RED) {
+          console.log("case 2: black sibling, red parent", p.right.value)
           p._color = BLACK
           p.right = repaint(RED, s)
           return
         } else {
-          p._color = DOUBLE_BLACK
+          console.log("case 2: black sibling, black parent", p.right.value)
           p.right = repaint(RED, s)
+          console.log(p.right)
           continue  
         }
       } else {
         //Case 3: red sibling
         //Restructure again
+        console.log("case 3: red sibling")
         s = cloneNode(s)
         p.right = s.left
         s.left = p
+        s._color = p._color
+        p._color = RED
         recount(p)
         recount(s)
+        if(i > 1) {
+          var pp = stack[i-2]
+          if(pp.left === p) {
+            pp.left = s
+          } else {
+            pp.right = s
+          }
+          recount(pp)
+        }
         stack[i-1] = s
         stack[i] = p
-        if(i >= stack.length-1) {
-          stack.push(v)
-        } else {
-          stack[i+1] = v
-        }
         i = i+1
       }
     } else {
+      console.log("right")
       s = p.left
       //Check case 1:
       if(s.left && s.left._color === RED) {
+        console.log("case 1: left sibling child red", p.value, p._color)
         s = p.left = cloneNode(s)
         z = s.left = cloneNode(s.left)
         p.left = s.right
         s.right = p
         s.left = z
+        s._color = p._color
+        n._color = BLACK
+        p._color = BLACK
         z._color = BLACK
         recount(p)
         recount(s)
+        console.log(n.value, p.value, s.value, z.value)
+        if(i > 1) {
+          var pp = stack[i-2]
+          if(pp.right === p) {
+            pp.right = s
+          } else {
+            pp.left = s
+          }
+          recount(pp)
+        }
+        stack[i-1] = s
         return
       } else if(s.right && s.right._color === RED) {
+        console.log("case 1: right sibling child red")
         s = p.left = cloneNode(s)
         z = s.right = cloneNode(s.right)
         p.left = z.right
         s.right = z.left
         z.right = p
         z.left = s
-        z._color = BLACK
+        z._color = p._color
+        p._color = BLACK
+        s._color = BLACK
+        n._color = BLACK
         recount(p)
         recount(s)
         recount(z)
+        if(i > 1) {
+          var pp = stack[i-2]
+          if(pp.right === p) {
+            pp.right = z
+          } else {
+            pp.left = z
+          }
+          recount(pp)
+        }
+        stack[i-1] = s
         return
       }
       if(s._color === BLACK) {
         //Case 2: black sibling
         if(p._color === RED) {
+          console.log("case 2: black sibling, red parent", p.left.value)
           p._color = BLACK
           p.left = repaint(RED, s)
           return
         } else {
-          p._color = DOUBLE_BLACK
+          console.log("case 2: black sibling, black parent", p.left.value)
           p.left = repaint(RED, s)
+          console.log(p.left)
           continue  
         }
       } else {
         //Case 3: red sibling
         //Restructure again
+        console.log("case 3: red sibling")
         s = cloneNode(s)
         p.left = s.right
         s.right = p
+        s._color = p._color
+        p._color = RED
         recount(p)
         recount(s)
+        if(i > 1) {
+          var pp = stack[i-2]
+          if(pp.right === p) {
+            pp.right = s
+          } else {
+            pp.left = s
+          }
+          recount(pp)
+        }
         stack[i-1] = s
         stack[i] = p
-        if(i >= stack.length-1) {
-          stack.push(v)
-        } else {
-          stack[i+1] = v
-        }
         i = i+1
       }
     }
@@ -731,7 +809,6 @@ iproto.remove = function() {
     } else {
       //Hard case: Repaint n, and then do some nasty stuff
       console.log("BLACK leaf")
-      n._color = DOUBLE_BLACK
       for(var i=0; i<cstack.length; ++i) {
         cstack[i]._count--
       }
