@@ -533,18 +533,17 @@ function fixDoubleBlack(stack) {
   var n, p, s, z
   for(var i=stack.length-1; i>=0; --i) {
     n = stack[i]
-    console.log("visit:", n.value)
     if(i === 0) {
       n._color = BLACK
       return
     }
+    //console.log("visit node:", n.key, i, stack[i].key, stack[i-1].key)
     p = stack[i-1]
     if(p.left === n) {
-      console.log("left")
+      //console.log("left child")
       s = p.right
-      //Check case 1:
       if(s.right && s.right._color === RED) {
-        console.log("case 1: right sibling child red", p.value, p._color)
+        //console.log("case 1: right sibling child red")
         s = p.right = cloneNode(s)
         z = s.right = cloneNode(s.right)
         p.right = s.left
@@ -556,7 +555,6 @@ function fixDoubleBlack(stack) {
         z._color = BLACK
         recount(p)
         recount(s)
-        console.log(n.value, p.value, s.value, z.value)
         if(i > 1) {
           var pp = stack[i-2]
           if(pp.left === p) {
@@ -564,12 +562,11 @@ function fixDoubleBlack(stack) {
           } else {
             pp.right = s
           }
-          recount(pp)
         }
         stack[i-1] = s
         return
       } else if(s.left && s.left._color === RED) {
-        console.log("case 1: left sibling child red")
+        //console.log("case 1: left sibling child red")
         s = p.right = cloneNode(s)
         z = s.left = cloneNode(s.left)
         p.right = z.left
@@ -590,28 +587,23 @@ function fixDoubleBlack(stack) {
           } else {
             pp.right = z
           }
-          recount(pp)
         }
         stack[i-1] = s
         return
       }
       if(s._color === BLACK) {
-        //Case 2: black sibling
         if(p._color === RED) {
-          console.log("case 2: black sibling, red parent", p.right.value)
+          //console.log("case 2: black sibling, red parent", p.right.value)
           p._color = BLACK
           p.right = repaint(RED, s)
           return
         } else {
-          console.log("case 2: black sibling, black parent", p.right.value)
+          //console.log("case 2: black sibling, black parent", p.right.value)
           p.right = repaint(RED, s)
-          console.log(p.right)
           continue  
         }
       } else {
-        //Case 3: red sibling
-        //Restructure again
-        console.log("case 3: red sibling")
+        //console.log("case 3: red sibling")
         s = cloneNode(s)
         p.right = s.left
         s.left = p
@@ -626,18 +618,21 @@ function fixDoubleBlack(stack) {
           } else {
             pp.right = s
           }
-          recount(pp)
         }
         stack[i-1] = s
         stack[i] = p
-        i = i+1
+        if(i+1 < stack.length) {
+          stack[i+1] = n
+        } else {
+          stack.push(n)
+        }
+        i = i+2
       }
     } else {
-      console.log("right")
+      //console.log("right child")
       s = p.left
-      //Check case 1:
       if(s.left && s.left._color === RED) {
-        console.log("case 1: left sibling child red", p.value, p._color)
+        //console.log("case 1: left sibling child red", p.value, p._color)
         s = p.left = cloneNode(s)
         z = s.left = cloneNode(s.left)
         p.left = s.right
@@ -649,7 +644,6 @@ function fixDoubleBlack(stack) {
         z._color = BLACK
         recount(p)
         recount(s)
-        console.log(n.value, p.value, s.value, z.value)
         if(i > 1) {
           var pp = stack[i-2]
           if(pp.right === p) {
@@ -657,12 +651,11 @@ function fixDoubleBlack(stack) {
           } else {
             pp.left = s
           }
-          recount(pp)
         }
         stack[i-1] = s
         return
       } else if(s.right && s.right._color === RED) {
-        console.log("case 1: right sibling child red")
+        //console.log("case 1: right sibling child red")
         s = p.left = cloneNode(s)
         z = s.right = cloneNode(s.right)
         p.left = z.right
@@ -683,28 +676,23 @@ function fixDoubleBlack(stack) {
           } else {
             pp.left = z
           }
-          recount(pp)
         }
         stack[i-1] = s
         return
       }
       if(s._color === BLACK) {
-        //Case 2: black sibling
         if(p._color === RED) {
-          console.log("case 2: black sibling, red parent", p.left.value)
+          //console.log("case 2: black sibling, red parent")
           p._color = BLACK
           p.left = repaint(RED, s)
           return
         } else {
-          console.log("case 2: black sibling, black parent", p.left.value)
+          //console.log("case 2: black sibling, black parent")
           p.left = repaint(RED, s)
-          console.log(p.left)
           continue  
         }
       } else {
-        //Case 3: red sibling
-        //Restructure again
-        console.log("case 3: red sibling")
+        //console.log("case 3: red sibling")
         s = cloneNode(s)
         p.left = s.right
         s.right = p
@@ -719,11 +707,15 @@ function fixDoubleBlack(stack) {
           } else {
             pp.left = s
           }
-          recount(pp)
         }
         stack[i-1] = s
         stack[i] = p
-        i = i+1
+        if(i+1 < stack.length) {
+          stack[i+1] = n
+        } else {
+          stack.push(n)
+        }
+        i = i+2
       }
     }
   }
@@ -747,10 +739,15 @@ iproto.remove = function() {
       cstack[i] = new RBNode(n._color, n.key, n.value, n.left, cstack[i+1], n._count)
     }
   }
+
   //Get node
   n = cstack[cstack.length-1]
+  //console.log("start remove: ", n.value)
+
   //If not leaf, then swap with previous node
   if(n.left && n.right) {
+    //console.log("moving to leaf")
+
     //First walk to previous leaf
     var split = cstack.length
     n = n.left
@@ -771,11 +768,13 @@ iproto.remove = function() {
     }
     cstack[split-1].left = cstack[split]
   }
+  //console.log("stack=", cstack.map(function(v) { return v.value }))
+
   //Remove leaf node
   n = cstack[cstack.length-1]
   if(n._color === RED) {
     //Easy case: removing red leaf
-    console.log("RED leaf")
+    //console.log("RED leaf")
     var p = cstack[cstack.length-2]
     if(p.left === n) {
       p.left = null
@@ -790,7 +789,7 @@ iproto.remove = function() {
   } else {
     if(n.left || n.right) {
       //Second easy case:  Single child black parent
-      console.log("BLACK single child")
+      //console.log("BLACK single child")
       if(n.left) {
         swapNode(n, n.left)
       } else if(n.right) {
@@ -804,11 +803,11 @@ iproto.remove = function() {
       return new RedBlackTree(this.tree._compare, cstack[0])
     } else if(cstack.length === 1) {
       //Third easy case: root
-      console.log("ROOT")
+      //console.log("ROOT")
       return new RedBlackTree(this.tree._compare, null)
     } else {
       //Hard case: Repaint n, and then do some nasty stuff
-      console.log("BLACK leaf")
+      //console.log("BLACK leaf no children")
       for(var i=0; i<cstack.length; ++i) {
         cstack[i]._count--
       }

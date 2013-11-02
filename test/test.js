@@ -50,7 +50,6 @@ function checkTree(tree, t) {
   t.equals(r[1], tree.size, "tree size")
   //console.log(util.inspect(printTree(tree.root), {depth:10}))
 }
-/*
 
 tape("insert()", function(t) {
   var t1 = makeTree()
@@ -109,8 +108,6 @@ tape("bounds searching", function(t) {
     return u.insert(k, v)
   }, makeTree())
 
-  console.log(u.toJSON())
-
   t.equals(u.ge(3).index, 6, "leastLower simple")
   t.equals(u.ge(1).index, 1, "leastLower start")
   t.equals(u.ge(0.9).index, 1, "leastLower end")
@@ -126,17 +123,20 @@ tape("bounds searching", function(t) {
 
   t.end()
 })
-*/
 
 tape("remove()", function(t) {
-  var u = iota(20).reduce(function(u, k, v) {
-    return u.insert(k, v)
-  }, makeTree())
 
-  print(u)
-  print(u.remove(18))
-  checkTree(u.remove(18), t)
-  
+  var sz = [1, 2,  10, 20, 23, 31, 32, 33]
+  for(var n=0; n<sz.length; ++n) {
+    var c = sz[n]
+    var u = iota(c).reduce(function(u, k, v) {
+      return u.insert(k, v)
+    }, makeTree())
+    for(var i=0; i<c; ++i) {
+      checkTree(u.remove(i), t)
+    }
+  }
+
   t.end()
 })
 
