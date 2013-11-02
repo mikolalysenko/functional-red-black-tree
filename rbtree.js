@@ -798,7 +798,7 @@ iproto.remove = function() {
       }
       //Child must be red, so repaint it black to balance color
       n._color = BLACK
-      for(var i=0; i<cstack.length; ++i) {
+      for(var i=0; i<cstack.length-1; ++i) {
         cstack[i]._count--
       }
       return new RedBlackTree(this.tree._compare, cstack[0])

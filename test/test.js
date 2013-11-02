@@ -134,10 +134,9 @@ tape("remove()", function(t) {
   }, makeTree())
 
   print(u)
-  print(u.remove(8))
-  for(var i=0; i<20; ++i) {
-    checkTree(u.remove(i), t)
-  }
+  print(u.remove(18))
+  checkTree(u.remove(18), t)
+  
   t.end()
 })
 
