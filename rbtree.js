@@ -329,9 +329,12 @@ Object.defineProperty(proto, "end", {
 
 //Find the ith item in the tree
 proto.at = function(idx) {
+  if(idx < 0) {
+    return new RedBlackTreeIterator(this, [])
+  }
   var n = this.root
   var stack = []
-  while(n) {
+  while(true) {
     stack.push(n)
     if(n.left) {
       if(idx < n.left._count) {
@@ -343,12 +346,14 @@ proto.at = function(idx) {
     if(!idx) {
       return new RedBlackTreeIterator(this, stack)
     }
+    idx -= 1
     if(n.right) {
-      idx -= 1
       if(idx >= n.right._count) {
         break
       }
       n = n.right
+    } else {
+      break
     }
   }
   return new RedBlackTreeIterator(this, [])
@@ -455,7 +460,7 @@ proto.find = function(key) {
       n = n.right
     }
   }
-  return null
+  return new RedBlackTreeIterator(this, [])
 }
 
 //Removes item with key from tree

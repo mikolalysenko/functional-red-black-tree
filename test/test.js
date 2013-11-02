@@ -131,7 +131,7 @@ tape("keys and values", function(t) {
   t.end()
 })
 
-tape("bounds searching", function(t) {
+tape("searching", function(t) {
 
   var arr = [0, 1, 1, 1, 1, 2, 3, 4, 5, 6, 6 ]
 
@@ -174,7 +174,23 @@ tape("bounds searching", function(t) {
   t.equals(u.lt(6).index, 8, "lt last")
   t.equals(u.lt(100).index, 10, "lt big")
   t.equals(u.lt(-1).valid, false, "lt small")
+
+  t.equals(u.find(-1).valid, false, "find missing small")
+  t.equals(u.find(10000).valid, false, "find missing big")
+  t.equals(u.find(3).index, 6, "find simple")
+  t.ok(u.find(1).index > 0, "find repeat")
+  t.ok(u.find(1).index < 5, "find repeat")
   
+  for(var i=0; i<arr.length; ++i) {
+    t.equals(u.find(arr[i]).key, arr[i], "find " + i)
+  }
+
+  for(var i=0; i<arr.length; ++i) {
+    t.equals(u.at(i).key, arr[i], "at " + i)
+  }
+  t.equals(u.at(-1).valid, false, "at missing small")
+  t.equals(u.at(1000).valid, false, "at missing big")
+
   t.end()
 })
 
@@ -199,4 +215,3 @@ tape("update()", function(t) {
 
   t.end()
 })
-
