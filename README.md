@@ -6,8 +6,6 @@ Functional (or fully presistent) data structures allow for non-destructive updat
 
 Some advantages of this is that it is possible to apply insertions and removals to the tree while still iterating over previous versions of the tree.  Functional and persistent data structures can also be useful in many geometric algorithms like point location within triangulations or ray queries, and can be used to analyze the history of executing various algorithms.  This added power though comes at a cost, since it is generally a bit slower to use a functional data structure than an imperative version.  However, if your application needs this behavior then you may consider using this module.
 
-NOT YET FINISHED
-
 # Install
 
     npm install functional-red-black-tree
