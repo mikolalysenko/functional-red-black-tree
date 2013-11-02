@@ -100,6 +100,37 @@ tape("insert()", function(t) {
   t.end()
 })
 
+
+
+tape("keys and values", function(t) {
+
+  var original_keys = [ "potato", "sock", "foot", "apple", "newspaper", "gameboy" ]
+  var original_values = [ 42, 10, false, "!!!", {}, null ]
+
+  var u = makeTree()
+  for(var i=0; i<original_keys.length; ++i) {
+    u = u.insert(original_keys[i], original_values[i])
+  }
+
+  var zipped = iota(6).map(function(i) {
+    return [ original_keys[i], original_values[i] ]
+  })
+
+  zipped.sort(function(a,b) {
+    if(a[0] < b[0]) { return -1 }
+    if(a[0] > b[0]) { return 1 }
+    return 0
+  })
+
+  var keys = zipped.map(function(v) { return v[0] })
+  var values = zipped.map(function(v) { return v[1] })
+
+  t.same(u.keys, keys)
+  t.same(u.values, values)
+
+  t.end()
+})
+
 tape("bounds searching", function(t) {
 
   var arr = [0, 1, 1, 1, 1, 2, 3, 4, 5, 6, 6 ]
@@ -108,19 +139,42 @@ tape("bounds searching", function(t) {
     return u.insert(k, v)
   }, makeTree())
 
-  t.equals(u.ge(3).index, 6, "leastLower simple")
-  t.equals(u.ge(1).index, 1, "leastLower start")
-  t.equals(u.ge(0.9).index, 1, "leastLower end")
-  t.equals(u.ge(1.1).index, 5, "leastLower end")
-  t.equals(u.ge(100).index, 11, "leastLower eof")
-  t.equals(u.ge(-1).index, 0, "leastLower index")
+  t.equals(u.ge(3).index, 6, "ge simple")
+  t.equals(u.ge(0.9).index, 1, "ge run start")
+  t.equals(u.ge(1).index, 1, "ge run mid")
+  t.equals(u.ge(1.1).index, 5, "ge run end")
+  t.equals(u.ge(0).index, 0, "ge first")
+  t.equals(u.ge(6).index, 9, "ge last")
+  t.equals(u.ge(100).valid, false, "ge big")
+  t.equals(u.ge(-1).index, 0, "ge small")
+
+  t.equals(u.gt(3).index, 7, "gt simple")
+  t.equals(u.gt(0.9).index, 1, "gt run start")
+  t.equals(u.gt(1).index, 5, "gt run mid")
+  t.equals(u.gt(1.1).index, 5, "gt run end")
+  t.equals(u.gt(0).index, 1, "gt first")
+  t.equals(u.gt(6).valid, false, "gt last")
+  t.equals(u.gt(100).valid, false, "gt big")
+  t.equals(u.gt(-1).index, 0, "ge small")
+
+  t.equals(u.le(3).index, 6, "le simple")
+  t.equals(u.le(0.9).index, 0, "le run start")
+  t.equals(u.le(1).index, 4, "le run mid")
+  t.equals(u.le(1.1).index, 4, "le run end")
+  t.equals(u.le(0).index, 0, "le first")
+  t.equals(u.le(6).index, 10, "le last")
+  t.equals(u.le(100).index, 10, "le big")
+  t.equals(u.le(-1).valid, false, "le small")
   
-
-  t.equals(u.gt(3).index, 7, "greatestLower simple")
-  t.equals(u.gt(1).index, 5, "greatestLower repeat")
-  t.equals(u.gt(0.9).index, 1, "greatestLower start")
-  t.equals(u.gt(100).index, 11, "greatestLower eof")
-
+  t.equals(u.lt(3).index, 5, "lt simple")
+  t.equals(u.lt(0.9).index, 0, "lt run start")
+  t.equals(u.lt(1).index, 0, "lt run mid")
+  t.equals(u.lt(1.1).index, 4, "lt run end")
+  t.equals(u.lt(0).valid, false, "lt first")
+  t.equals(u.lt(6).index, 8, "lt last")
+  t.equals(u.lt(100).index, 10, "lt big")
+  t.equals(u.lt(-1).valid, false, "lt small")
+  
   t.end()
 })
 
@@ -141,5 +195,8 @@ tape("remove()", function(t) {
 })
 
 tape("update()", function(t) {
+
+
   t.end()
 })
+
