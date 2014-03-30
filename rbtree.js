@@ -36,7 +36,7 @@ var proto = RedBlackTree.prototype
 Object.defineProperty(proto, "keys", {
   get: function() {
     var result = []
-    this.foreach(function(k,v) {
+    this.forEach(function(k,v) {
       result.push(k)
     })
     return result
@@ -46,7 +46,7 @@ Object.defineProperty(proto, "keys", {
 Object.defineProperty(proto, "values", {
   get: function() {
     var result = []
-    this.foreach(function(k,v) {
+    this.forEach(function(k,v) {
       result.push(v)
     })
     return result
@@ -279,7 +279,7 @@ function doVisit(lo, hi, compare, visit, node) {
 }
 
 
-proto.foreach = function(visit, lo, hi) {
+proto.forEach = function rbTreeForEach(visit, lo, hi) {
   if(!this.root) {
     return
   }
@@ -593,7 +593,7 @@ function fixDoubleBlack(stack) {
             pp.right = z
           }
         }
-        stack[i-1] = s
+        stack[i-1] = z
         return
       }
       if(s._color === BLACK) {
@@ -682,7 +682,7 @@ function fixDoubleBlack(stack) {
             pp.left = z
           }
         }
-        stack[i-1] = s
+        stack[i-1] = z
         return
       }
       if(s._color === BLACK) {

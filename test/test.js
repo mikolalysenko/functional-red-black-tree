@@ -71,7 +71,7 @@ tape("insert()", function(t) {
     checkTree(next, t)
     arr.sort(function(a,b) { return a-b })
     var ptr = 0
-    u.foreach(-Infinity, Infinity, function(k,v) {
+    u.forEach(function(k,v) {
       t.equals(k, arr[ptr++])
     })
     t.equals(ptr, arr.length)
@@ -107,7 +107,7 @@ tape("foreach", function(t) {
   //Check basic foreach
   var visit_keys = []
   var visit_vals = []
-  u.foreach(function(k,v) {
+  u.forEach(function(k,v) {
     visit_keys.push(k)
     visit_vals.push(v)
   })
@@ -117,7 +117,7 @@ tape("foreach", function(t) {
   //Check foreach with termination
   visit_keys = []
   visit_vals = []
-  t.equals(u.foreach(function(k,v) {
+  t.equals(u.forEach(function(k,v) {
     if(k === 5) {
       return 1000
     }
@@ -130,7 +130,7 @@ tape("foreach", function(t) {
   //Check half interval foreach
   visit_keys = []
   visit_vals = []
-  u.foreach(function(k,v) {
+  u.forEach(function(k,v) {
     visit_keys.push(k)
     visit_vals.push(v)
   }, 3)
@@ -140,7 +140,7 @@ tape("foreach", function(t) {
   //Check half interval foreach with termination
   visit_keys = []
   visit_vals = []
-  t.equals(u.foreach(function(k,v) {
+  t.equals(u.forEach(function(k,v) {
     if(k === 12) {
       return 1000
     }
@@ -154,7 +154,7 @@ tape("foreach", function(t) {
   //Check interval foreach
   visit_keys = []
   visit_vals = []
-  u.foreach(function(k,v) {
+  u.forEach(function(k,v) {
     visit_keys.push(k)
     visit_vals.push(v)
   }, 3, 15)
@@ -164,7 +164,7 @@ tape("foreach", function(t) {
   //Check interval foreach with termination
   visit_keys = []
   visit_vals = []
-  t.equals(u.foreach(function(k,v) {
+  t.equals(u.forEach(function(k,v) {
     if(k === 12) {
       return 1000
     }
@@ -347,5 +347,52 @@ tape("searching", function(t) {
   t.equals(u.at(-1).valid, false, "at missing small")
   t.equals(u.at(1000).valid, false, "at missing big")
 
+  t.end()
+})
+
+tape("slab-sequence", function(t) {
+
+  var tree = makeTree()
+
+  tree=tree.insert(0, 0)
+  checkTree(tree, t)
+  t.same(tree.values, [0])
+
+  tree=tree.insert(1, 1)
+  checkTree(tree, t)
+  t.same(tree.values, [0,1])
+
+  tree=tree.insert(0.5, 2)
+  checkTree(tree, t)
+  t.same(tree.values, [0,2,1])
+
+  tree=tree.insert(0.25, 3)
+  checkTree(tree, t)
+  t.same(tree.values, [0,3,2,1])
+
+  tree=tree.remove(0)
+  checkTree(tree, t)
+  t.same(tree.values, [3,2,1])
+
+  tree=tree.insert(0.375, 4)
+  checkTree(tree, t)
+  t.same(tree.values, [3, 4, 2, 1])
+
+  tree=tree.remove(1)
+  checkTree(tree, t)
+  t.same(tree.values, [3,4,2])
+  
+  tree=tree.remove(0.5)
+  checkTree(tree, t)
+  t.same(tree.values, [3,4])
+
+  tree=tree.remove(0.375)
+  checkTree(tree, t)
+  t.same(tree.values, [3])
+
+  tree=tree.remove(0.25)
+  checkTree(tree, t)
+  t.same(tree.values, [])
+  
   t.end()
 })

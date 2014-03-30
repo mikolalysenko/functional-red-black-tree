@@ -1,20 +1,18 @@
 {
   "name": "functional-red-black-tree",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A fully persistent balanced binary search tree",
   "main": "rbtree.js",
   "directories": {
     "test": "test"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-    "iota-array": "~0.0.1",
-    "tape": "~1.1.1",
-    "tap": "~0.4.4"
+    "iota-array": "^0.0.1",
+    "tape": "^2.12.0"
   },
   "scripts": {
-    "test": "tap test/*.js"
+    "test": "tape test/*.js"
   },
   "repository": {
     "type": "git",
