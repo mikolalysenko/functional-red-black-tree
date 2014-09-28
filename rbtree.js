@@ -476,10 +476,8 @@ proto.remove = function(key) {
 proto.get = function(key) {
   var cmp = this._compare
   var n = this.root
-  var stack = []
   while(n) {
     var d = cmp(key, n.key)
-    stack.push(n)
     if(d === 0) {
       return n.value
     }
