@@ -295,6 +295,14 @@ tape("searching", function(t) {
     return u.insert(k, v)
   }, makeTree())
 
+
+  for(var i=0; i<arr.length; ++i) {
+    if(arr[i] !== arr[i-1] && arr[i] !== arr[i+1]) {
+      t.equals(u.get(arr[i]), i, "get " + arr[i])
+    }
+  }
+  t.equals(u.get(-1), undefined, "get missing")
+
   t.equals(u.ge(3).index, 6, "ge simple")
   t.equals(u.ge(0.9).index, 1, "ge run start")
   t.equals(u.ge(1).index, 1, "ge run mid")
@@ -346,6 +354,7 @@ tape("searching", function(t) {
   }
   t.equals(u.at(-1).valid, false, "at missing small")
   t.equals(u.at(1000).valid, false, "at missing big")
+
 
   t.end()
 })
