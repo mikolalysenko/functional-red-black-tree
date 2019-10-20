@@ -9,7 +9,8 @@
   "dependencies": {},
   "devDependencies": {
     "iota-array": "^0.0.1",
-    "tape": "^2.12.0"
+    "tape": "^2.12.0",
+    "typescript": "^3.6.4"
   },
   "scripts": {
     "test": "tape test/*.js"

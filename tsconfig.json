@@ -1,0 +1,21 @@
+{
+	"version": "2.3.4",
+	"compilerOptions": {
+		"module": "commonjs",
+		"allowJs": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"noImplicitThis": true,
+		"allowSyntheticDefaultImports": false,
+		"removeComments": true,
+		"downlevelIteration": true,
+		"sourceMap": true,
+		"experimentalDecorators": true,
+		"jsx": "react",
+		"target": "es5",
+		"lib": ["es6", "es2017", "dom", "scripthost", "esnext.asynciterable"],
+		"outDir": "build"
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules"]
+}
