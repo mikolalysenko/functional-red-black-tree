@@ -480,7 +480,7 @@ function doVisitHalf<K, V, T>(
 	compare: (a: K, b: K) => number,
 	fn: (key: K, value: V) => T,
 	node: RBNode<K, V>
-) {
+): T | undefined {
 	let l = compare(lo, node.key)
 	if (l <= 0) {
 		if (node.left) {

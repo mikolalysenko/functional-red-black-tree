@@ -5,9 +5,7 @@ import makeTree, {
 } from "../src/rbtree"
 import * as tape from "tape"
 import * as util from "util"
-import * as iota from "iota-array"
-
-declare function iota(length: number): Array<number>
+const iota = require("iota-array") as (n: number) => Array<number>
 
 var COLORS = ["r", "b", "bb"]
 
