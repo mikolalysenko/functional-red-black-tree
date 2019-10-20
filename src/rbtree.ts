@@ -562,7 +562,7 @@ export class RedBlackTreeIterator<K, V> {
 			return this.tree
 		}
 		//First copy path to node
-		let cstack = new Array(stack.length)
+		let cstack: Array<RBNode<K, V>> = new Array(stack.length)
 		let n = stack[stack.length - 1]
 		cstack[cstack.length - 1] = new RBNode(
 			n._color,
@@ -790,7 +790,7 @@ export class RedBlackTreeIterator<K, V> {
 		if (stack.length === 0) {
 			throw new Error("Can't update empty node!")
 		}
-		let cstack = new Array(stack.length)
+		let cstack: Array<RBNode<K, V>> = new Array(stack.length)
 		let n = stack[stack.length - 1]
 		cstack[cstack.length - 1] = new RBNode(
 			n._color,
@@ -860,7 +860,6 @@ function swapNode<K, V>(n: RBNode<K, V>, v: RBNode<K, V>) {
 
 //Fix up a double black node in a tree
 function fixDoubleBlack<K, V>(stack: Array<RBNode<K, V>>) {
-	let s, z
 	for (let i = stack.length - 1; i >= 0; --i) {
 		let n = stack[i]
 		if (i === 0) {
@@ -878,7 +877,7 @@ function fixDoubleBlack<K, V>(stack: Array<RBNode<K, V>>) {
 			if (s.right && s.right._color === RED) {
 				//console.log("case 1: right sibling child red")
 				s = p.right = cloneNode(s)
-				z = s.right = cloneNode(s.right as RBNode<K, V>)
+				let z = (s.right = cloneNode(s.right as RBNode<K, V>))
 				p.right = s.left
 				s.left = p
 				s.right = z
@@ -901,7 +900,7 @@ function fixDoubleBlack<K, V>(stack: Array<RBNode<K, V>>) {
 			} else if (s.left && s.left._color === RED) {
 				//console.log("case 1: left sibling child red")
 				s = p.right = cloneNode(s)
-				z = s.left = cloneNode(s.left as RBNode<K, V>)
+				let z = (s.left = cloneNode(s.left as RBNode<K, V>))
 				p.right = z.left
 				s.left = z.right
 				z.left = p
@@ -963,11 +962,14 @@ function fixDoubleBlack<K, V>(stack: Array<RBNode<K, V>>) {
 			}
 		} else {
 			//console.log("right child")
-			s = p.left
+			let s = p.left
+			if (!s) {
+				throw new Error("This cannot happen")
+			}
 			if (s.left && s.left._color === RED) {
 				//console.log("case 1: left sibling child red", p.value, p._color)
 				s = p.left = cloneNode(s)
-				z = s.left = cloneNode(s.left)
+				let z = (s.left = cloneNode(s.left as RBNode<K, V>))
 				p.left = s.right
 				s.right = p
 				s.left = z
@@ -990,7 +992,7 @@ function fixDoubleBlack<K, V>(stack: Array<RBNode<K, V>>) {
 			} else if (s.right && s.right._color === RED) {
 				//console.log("case 1: right sibling child red")
 				s = p.left = cloneNode(s)
-				z = s.right = cloneNode(s.right)
+				let z = (s.right = cloneNode(s.right as RBNode<K, V>))
 				p.left = z.right
 				s.right = z.left
 				z.right = p

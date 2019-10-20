@@ -9,7 +9,7 @@ const iota = require("iota-array") as (n: number) => Array<number>
 
 var COLORS = ["r", "b", "bb"]
 
-function printTree<K, V>(tree: RBNode<K, V> | undefined) {
+function printTree<K, V>(tree: RBNode<K, V> | undefined): any {
 	if (!tree) {
 		return []
 	}
@@ -31,7 +31,7 @@ function checkTree<K, V>(tree: RedBlackTree<K, V>, t: tape.Test) {
 		return
 	}
 	t.equals(tree.root._color, 1, "root is black")
-	function checkNode(node: RBNode<K, V> | undefined) {
+	function checkNode(node: RBNode<K, V> | undefined): [number, number] {
 		if (!node) {
 			return [1, 0]
 		}
