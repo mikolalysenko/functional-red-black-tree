@@ -16,6 +16,6 @@
 		"lib": ["es6", "es2017", "dom", "scripthost", "esnext.asynciterable"],
 		"outDir": "build"
 	},
-	"include": ["src/**/*"],
+	"include": ["src/**/*", "test/**/*"],
 	"exclude": ["node_modules"]
 }
