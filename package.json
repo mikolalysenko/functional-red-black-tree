@@ -2,7 +2,7 @@
   "name": "functional-red-black-tree",
   "version": "1.0.1",
   "description": "A fully persistent balanced binary search tree",
-  "main": "rbtree.js",
+  "main": "build/src/rbtree.js",
   "directories": {
     "test": "test"
   },
@@ -15,7 +15,9 @@
     "ts-node": "^8.4.1",
     "typescript": "^3.6.4"
   },
+  "files": ["build"],
   "scripts": {
+    "clean": "rm -rf build",
     "build": "tsc",
     "test": "tsc && tape build/test/*.js"
   },
