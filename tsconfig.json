@@ -3,10 +3,7 @@
 	"compilerOptions": {
 		"module": "commonjs",
 		"allowJs": true,
-		"strictNullChecks": true,
-		"strictFunctionTypes": true,
-		"noImplicitThis": true,
-		"noImplicitAny": true,
+		"strict": true,
 		"allowSyntheticDefaultImports": false,
 		"removeComments": true,
 		"downlevelIteration": true,
