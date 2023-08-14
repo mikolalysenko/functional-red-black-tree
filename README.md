@@ -117,42 +117,46 @@ Removes the first item with `key` in the tree
 **Returns** A new tree with the given item removed if it exists
 
 ### `tree.find(key)`
-Returns an iterator pointing to the first item in the tree with `key`, otherwise `null`.
-
-### `tree.ge(key)`
-Find the first item in the tree whose key is `>= key`
+Finds the first item in the tree with `key`
 
 * `key` is the key to search for
 
-**Returns** An iterator at the given element.
+**Returns** An iterator at the given element or an empty iterator if the item was not found
+
+### `tree.ge(key)`
+Finds the first item in the tree whose key is `>= key`
+
+* `key` is the key to search for
+
+**Returns** An iterator at the given element or an empty iterator if the item was not found
 
 ### `tree.gt(key)`
 Finds the first item in the tree whose key is `> key`
 
 * `key` is the key to search for
 
-**Returns** An iterator at the given element
+**Returns** An iterator at the given element or an empty iterator if the item was not found
 
 ### `tree.lt(key)`
 Finds the last item in the tree whose key is `< key`
 
 * `key` is the key to search for
 
-**Returns** An iterator at the given element
+**Returns** An iterator at the given element or an empty iterator if the item was not found
 
 ### `tree.le(key)`
 Finds the last item in the tree whose key is `<= key`
 
 * `key` is the key to search for
 
-**Returns** An iterator at the given element
+**Returns** An iterator at the given element or an empty iterator if the item was not found
 
 ### `tree.at(position)`
 Finds an iterator starting at the given element
 
 * `position` is the index at which the iterator gets created
 
-**Returns** An iterator starting at position
+**Returns** An iterator starting at position or an empty iterator if the position is out of range
 
 ### `tree.begin`
 An iterator pointing to the first element in the tree

@@ -448,11 +448,12 @@ proto.find = function(key) {
   var cmp = this._compare
   var n = this.root
   var stack = []
+  var last_ptr = 0
   while(n) {
     var d = cmp(key, n.key)
     stack.push(n)
     if(d === 0) {
-      return new RedBlackTreeIterator(this, stack)
+      last_ptr = stack.length
     }
     if(d <= 0) {
       n = n.left
@@ -460,16 +461,13 @@ proto.find = function(key) {
       n = n.right
     }
   }
-  return new RedBlackTreeIterator(this, [])
+  stack.length = last_ptr
+  return new RedBlackTreeIterator(this, stack)
 }
 
 //Removes item with key from tree
 proto.remove = function(key) {
-  var iter = this.find(key)
-  if(iter) {
-    return iter.remove()
-  }
-  return this
+  return this.find(key).remove()
 }
 
 //Returns the item at `key`
