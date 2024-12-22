@@ -27,7 +27,19 @@ function recount(node) {
 }
 
 function RedBlackTree(compare, root) {
-  this._compare = compare
+  if (compare === defaultCompare) {
+    this._compare = compare
+  } else {
+    // Wrap the provided compare function to return `0` when comparator
+    // returns `NaN`, so that we have the same semantics as the comparator
+    // passed to `array.sort()`;
+    this._compare = function (a, b) {
+      const result = compare(a, b);
+      // `result !== result` is a way to check if `result` is NaN without
+      // requiring a polyfill for `Number.isNumber` in older runtimes
+      return result !== result ? 0 : result;
+    }
+  }
   this.root = root
 }
 

@@ -477,3 +477,13 @@ tape("slab-sequence-2", function(t) {
 
   t.end()
 })
+
+tape("NaN-comparator", function(t) {
+  var u = makeTree(function(a,b) { return a - b });
+  u = u.insert(1, "one");
+  u = u.insert(Infinity, "Infinity one");
+  u = u.insert(Infinity, "Infinity two");
+  var i = u.find(Infinity);
+  t.equals(i.valid, true, "iterator is not valid -- did not find key Infinity");
+  t.end();
+});
